@@ -1,6 +1,4 @@
 import numpy as np
-import tensorflow as tf
-from tensorflow import keras
 
 class ReplayBuffer():
     def __init__(self, max_size, input_dims):
@@ -9,20 +7,22 @@ class ReplayBuffer():
 
         self.state_memory = np.zeros((self.mem_size, *input_dims), dtype=np.float32)
         self.new_state_memory = np.zeros((self.mem_size, *input_dims), dtype=np.float32)
-        self.action_memory = np.zeros((self.mem_size, 3), dtype=np.int32)
+        self.action_memory = np.zeros((self.mem_size, 18), dtype=np.int32) #was 3
 
         self.reward_memory = np.zeros(self.mem_size, dtype=np.float32)
-        self.terminal_memory = np.zeros(self.mem_size, dtype=np.int32) #maybyt dtype=bool_
+        self.terminal_memory = np.zeros(self.mem_size, dtype=np.int32) #maybe dtype=bool_
 
-    def store_transition(self, state, action, reward, state_, done):
+    def store_transition(self, state, action, reward, new_state, done):
         index = self.mem_counter % self.mem_size
+        # Flatten the action array before storing if necessary
+        flattened_action = action.flatten()
+        self.action_memory[index] = flattened_action
         self.state_memory[index] = state
-        self.new_state_memory[index] = state_
         self.reward_memory[index] = reward
-        self.action_memory[index] = action
-        self.terminal_memory[index] = 1 - int(done)
-
+        self.new_state_memory[index] = new_state
+        self.terminal_memory[index] = done
         self.mem_counter += 1
+
 
     def sample_buffer(self, batch_size):
         max_mem = min(self.mem_counter, self.mem_size)
@@ -35,6 +35,3 @@ class ReplayBuffer():
         terminal = self.terminal_memory[batch]
 
         return states, actions, rewards, states_, terminal
-
-
-
