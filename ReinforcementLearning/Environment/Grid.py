@@ -10,7 +10,7 @@ from Trees.Tree import Tree
 
 class Grid:
     # define a dictionary of tree types of number -> tree type
-    tree_types_dict1 = {
+    tree_types_dict = {
         0: "None",
         1: "Abies Holophylla",
         2: "Pinus Desniflora1",
@@ -35,7 +35,7 @@ class Grid:
         21: "Zelkova Serrata"
     }
 
-    tree_types_dict = {
+    tree_types_dict1 = {
         0: "None",
         1: "Abies Holophylla",
         2: "Pinus Desniflora1",
@@ -53,7 +53,7 @@ class Grid:
         self.landscapeArea = x * y
         self.grid = self.createGrid(x, y)
         self.numericalGrid = np.zeros((x, y))
-        self.state = np.zeros((x, y, 3)) # planted -1 no 1 yes, tree_type
+        self.state = np.zeros((x, y, 2)) # x, y, tree_type
         self.initalize_state_grid()
         self.spots = self.x * self.y
 
@@ -100,28 +100,25 @@ class Grid:
         return np.array([[1 if self.grid[i, j].plantable else 0 for j in range(self.y)] for i in range(self.x)])
 
 
-    def step(self, action):
+    def step(self, action, x, y):
         previous_state = self.state.copy()
-        good_trees = [3, 5]
+        good_trees = [2, 3, 7, 21]
         # Check the structure of action and adjust accordingly
         generator = TreeGenerator()
         #loop through action and plant tree
         reward = 0
-        for i in range(self.x):
-            for j in range(self.y):
-                tree_type = action[i, j]
-                tree_type = int(tree_type)
 
-                tree = generator.generateTree(self.tree_types_dict[tree_type], (i, j))
-                self.grid = self.plant(i, j, tree)
-                self.updateState(i, j, tree_type)
-                if tree_type in good_trees:
-                    reward += 3
-                else:
-                    reward -= 1
+        tree_type = int(action)
 
 
+        if self.state[x, y][1] != 1 and action != 0 : reward -=5
+        elif self.state[x, y][1] != 1 and action == 0: reward += 2
+        elif tree_type in good_trees: reward += 5
+        else: reward+=1
 
+        tree = generator.generateTree(self.tree_types_dict[tree_type], (x, y))
+        self.grid = self.plant(x, y, tree)
+        self.updateState(x, y, tree_type)
 
 
         #reward = 3 if tree_type in good_trees else -1
@@ -164,7 +161,14 @@ class Grid:
         Method to get the numerical representation of the grid
         :return: numerical grid
         """
-        self.state[x, y] = (x, y, tree_type)
+
+        if self.state[x, y][1] != 1:
+            return
+        self.state[x, y] = (tree_type, 0)
+        if x+1 < self.x:
+            self.state[x+1, y] = (-1, -1)
+        if x-1 >= 0:
+            self.state[x-1, y] = (-1, -1)
 
     def get_state(self):
         return self.state
@@ -178,7 +182,7 @@ class Grid:
     def initalize_state_grid(self):
         for i in range(self.x):
             for j in range(self.y):
-                self.state[i, j] = (i, j, 0)
+                self.state[i, j] = (0, 1) # tree_type, plantable
 
     def calculate_reward(self, x, y, tree_type, is_spot_empty):
         # Define base rewards and penalties
