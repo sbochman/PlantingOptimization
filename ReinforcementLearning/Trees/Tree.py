@@ -5,7 +5,7 @@ subclass of this abstract class.
 """
 class Tree:
 
-    def __init__(self, leafType, plantingLocation, plantSize, species, creditValue, crownArea, co2Absorption, price, treeCategory, numericalRepresentation):
+    def __init__(self, leaf_type, planting_location, plant_size, species, credit_value, crown_area, co2_absorption, price, tree_category, numerical_representation):
         """
         Constructor for the Tree class
         :param leafType: String type of leaf the tree has
@@ -19,37 +19,37 @@ class Tree:
         :param treeCategory: String category of the tree being either screening, large, or native.
         :param numericalRepresentation: Integer numerical representation of the tree
         """
-        self.leafType = leafType
-        self.plantingLocation = plantingLocation
-        self.plantSize = plantSize
+        self.leaf_type = leaf_type
+        self.planting_location = planting_location
+        self.plant_size = plant_size
         self.species = species
-        self.creditValue = creditValue
-        self.crownArea = crownArea
-        self.co2Absorption = co2Absorption
+        self.credit_value = credit_value
+        self.crown_area = crown_area
+        self.co2_absorption = co2_absorption
         self.price = price
-        self.treeCategory = treeCategory
-        self.numericalRepresentation = numericalRepresentation
+        self.tree_category = tree_category
+        self.numerical_representation = numerical_representation
 
     def getLeafType(self):
         """
         Method to get the type of leaf the tree has
         :return: type of leaf the tree has
         """
-        return self.leafType
+        return self.leaf_type
 
     def getPlantingLocation(self):
         """
         Method to get the location where the tree is planted
         :return: (x, y) coordinates of the location where tree is planted
         """
-        return self.plantingLocation
+        return self.planting_location
 
     def getPlantSize(self):
         """
         Method to get the size of the tree
         :return: the size of the tree
         """
-        return self.plantSize
+        return self.plant_size
 
     def getSpecies(self):
         """
@@ -63,21 +63,21 @@ class Tree:
         Method to get the credit value of the tree
         :return: credit value of the tree
         """
-        return self.creditValue
+        return self.credit_value
 
     def getCrownArea(self):
         """
         Method to get the area of the crown
         :return: area of the crown
         """
-        return self.crownArea
+        return self.crown_area
 
     def getCo2Absorption(self):
         """
         Method to get the amount of CO2 absorbed by the tree
         :return: CO2 absorbed by the tree
         """
-        return self.co2Absorption
+        return self.co2_absorption
 
     def getPrice(self):
         """
@@ -91,11 +91,11 @@ class Tree:
         Method to get the category of the tree
         :return: category of the tree
         """
-        return self.treeCategory
+        return self.tree_category
 
     def getNumericalRepresentation(self):
         """
         Method to get the numerical representation of the tree
         :return: numerical representation of the tree
         """
-        return self.numericalRepresentation
+        return self.numerical_representation

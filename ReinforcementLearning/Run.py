@@ -1,48 +1,43 @@
-import seaborn as sns
-
+from Agent.Agent import Agent
 from Environment.Grid import Grid
 import numpy as np
-import tensorflow as tf
-from Agent.Agent import Agent
-import matplotlib.pyplot as plt
+import tensorflow
+tensorflow.keras.utils.disable_interactive_logging()
 
-tf.compat.v1.disable_eager_execution()
-env = Grid(3, 6)
-n_games = 1000
-action_space = 6     # env.x * env.y #* len(env.tree_types_dict)
-lr = 1e-5
+env = Grid(2, 6)  # Example dimensions
+n_games = 100
+agent = Agent(gamma=0.99, epsilon=1, eps_dec=1e-2, eps_min=0.01, lr=1e-4, input_dims=env.state.shape, mem_size=1000000, batch_size=32, num_tree_types=22)
+scores = []
 
 
-
-agent = Agent(gamma=0.95, epsilon=1, lr=lr, input_dims=env.state.shape, mem_size=1000000,
-              batch_size=32)
-scores, eps_history = [], []
-
-for i in range(n_games):
+for i in range(n_games):  # Number of episodes
     done = False
-    score = 0
     observation = env.reset()
-    num_invalid = 0
-    num_valid = 0
-    num_actions = 0
-
-   # for x in range(env.x):
-   #     for y in range(env.y):
-    observation = env.get_state()
-    action = agent.choose_action(observation)
-
-    observation_, reward, done = env.step(action) #change back to action
-    score += reward
-
-    agent.store_transition(observation, action, reward, observation_, done)
-    observation = observation_
-    #agent.learn()
-    num_actions += 1
+    score = 0
+    while not done:
+        for x in range(env.x):
+            for y in range(env.y):
+                action = agent.choose_action(observation, x, y, env.cost_remaining)
+                observation_, reward, done = env.step(action, x, y)
+                observation = observation_
+                if env.cost_remaining < 0:
+                    done = True
+                    reward = -250
+                score += reward
+                agent.store_transition(observation, action, reward, observation_, done, (x, y), env.cost_remaining)
+                if done: break
+            if done: break
 
     agent.learn()
     scores.append(score)
-    eps_history.append(agent.epsilon)
-    avg_score = np.mean(scores[-100:])
-    print(f'episode: {i}, score: {score}, last 100 average score: {avg_score}, invalid actions: {num_invalid}, valid actions: {num_valid} epsilon: {agent.epsilon}')
+    print(f'Episode {i}, Score: {score}, Last 100 Avg: {np.mean(scores[-100:])} Epsilon: {agent.epsilon}')
 
+# Assuming env has a method to render the final state
 env.render()
+
+print("Q_eval: ", agent.eval)
+print("Q_next: ", agent.next)
+print("Q_target: ", agent.target)
+
+# Iterate over the layers of the model
+

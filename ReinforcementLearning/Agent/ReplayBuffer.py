@@ -7,20 +7,26 @@ class ReplayBuffer():
 
         self.state_memory = np.zeros((self.mem_size, *input_dims), dtype=np.float32)
         self.new_state_memory = np.zeros((self.mem_size, *input_dims), dtype=np.float32)
-        self.action_memory = np.zeros((self.mem_size, 18), dtype=np.int32) #was 3
+        self.action_memory = np.zeros((self.mem_size, 30), dtype=np.int32) #was 3
+        self.coords_memory = np.zeros((self.mem_size, 2), dtype=np.int32)
+        self.cost_remaining_memory = np.zeros(self.mem_size, dtype=np.float32)
+        #self.tree_stats_memory = np.zeros((self.mem_size, 44), dtype=np.float32)
 
         self.reward_memory = np.zeros(self.mem_size, dtype=np.float32)
         self.terminal_memory = np.zeros(self.mem_size, dtype=np.int32) #maybe dtype=bool_
 
-    def store_transition(self, state, action, reward, new_state, done):
+    def store_transition(self, state, action, reward, new_state, done, coords, cost_remaining):
         index = self.mem_counter % self.mem_size
         # Flatten the action array before storing if necessary
-        flattened_action = action.flatten()
-        self.action_memory[index] = flattened_action
+        #flattened_action = action.flatten()
+        self.action_memory[index] = action
         self.state_memory[index] = state
         self.reward_memory[index] = reward
         self.new_state_memory[index] = new_state
         self.terminal_memory[index] = done
+        self.coords_memory[index] = coords
+        self.cost_remaining_memory[index] = cost_remaining
+        #self.tree_stats_memory[index] = tree_stats.reshape(-1)
         self.mem_counter += 1
 
 
@@ -33,5 +39,8 @@ class ReplayBuffer():
         rewards = self.reward_memory[batch]
         states_ = self.new_state_memory[batch]
         terminal = self.terminal_memory[batch]
+        coords = self.coords_memory[batch]
+        cost_remaining = self.cost_remaining_memory[batch]
+        #tree_stats = self.tree_stats_memory[batch]
 
-        return states, actions, rewards, states_, terminal
+        return states, actions, rewards, states_, terminal, coords, cost_remaining
