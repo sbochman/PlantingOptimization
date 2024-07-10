@@ -1,4 +1,4 @@
-from Trees.Tree import Tree
+from Tree import Tree
 
 class SingletonMeta(type):
     """

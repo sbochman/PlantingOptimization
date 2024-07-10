@@ -11,7 +11,7 @@ class Square:
         road: boolean to check if the square is by a road
     """
 
-    def __init__(self, x, y, byRoad, plantable):
+    def __init__(self, x, y, by_road, plantable, hedge, big_tree_area, pedestrian_road):
         """
         Constructor for the Square class
         :param x: x coordinate in grid
@@ -22,10 +22,13 @@ class Square:
         self.x = x
         self.y = y
         self.tree = None
-        self.road = byRoad
+        self.road = by_road
         self.plantable = plantable
+        self.hedge = hedge
+        self.big_tree_area = big_tree_area
+        self.pedestrian_road = pedestrian_road
 
-    def getCoordinates(self):
+    def get_coordinates(self):
         """
         Method to get the coordinates of a square
         :return: tuple of x and y coordinates
@@ -42,7 +45,7 @@ class Square:
             self.plantable = False
         else: return False
 
-    def checkNearSquares(self, radius):
+    def check_near_squares(self, radius):
         """
         Returns true or false if a square can be planted on by checking if near squares have trees planted on them.
         :param radius: radius to check for near squares
@@ -51,7 +54,7 @@ class Square:
 
         pass
 
-    def byRoad(self):
+    def by_road(self):
         """
         Method to check if a square is by a road
         :return: true if square is by a road, false otherwise
@@ -67,10 +70,31 @@ class Square:
             return True
         return False
 
-    def treeObj(self):
+    def tree_obj(self):
         return self.tree
 
-    def getNumericRepresentation(self):
+    def is_hedge(self):
+        """
+        Method to check if a square is a hedge
+        :return: true if square is a hedge, false otherwise
+        """
+        return self.hedge
+
+    def is_big_tree_area(self):
+        """
+        Method to check if a square is a big tree area
+        :return: true if square is a big tree area, false otherwise
+        """
+        return self.big_tree_area
+
+    def is_pedestrian_road(self):
+        """
+        Method to check if a square is a pedestrian road
+        :return: true if square is a pedestrian road, false otherwise
+        """
+        return self.pedestrian_road
+
+    def get_numeric_representation(self):
         """
         Method to get the numeric representation of the square
         :return: the numeric representation of the square

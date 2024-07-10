@@ -1,3 +1,5 @@
+import math
+import numpy as np
 """
 Class to specify the methods that a tree should have. There are 21 tree species
 in the dataset, and each tree has a specific set of attributes. Each species will be a
@@ -99,3 +101,25 @@ class Tree:
         :return: numerical representation of the tree
         """
         return self.numerical_representation
+
+    def fillGridRadius(self, grid_width, grid_height):
+        """
+        Method to fill the grid with the tree's radius
+        :return: the grid with the tree's radius
+        """
+        numerical_representation = self.getNumericalRepresentation()
+        radius = math.ceil(self.getPlantSize()[1] / 2)
+        center_x, center_y = self.getPlantingLocation()
+        min_x = max(0, center_x - radius)
+        max_x = min(grid_width, center_x + radius + 1)
+        min_y = max(0, center_y - radius)
+        max_y = min(grid_height, center_y + radius + 1)
+
+        occupied =[]
+        for i in range(min_y, max_y):
+            for j in range(min_x, max_x):
+                if (i - center_y)**2 + (j - center_x)**2 <= radius**2:
+                    occupied.append([i, j]) # to represent type of tree and area occupied by that tree print -1 * numerical_representation
+
+        return occupied, -1 * numerical_representation
+
