@@ -61,7 +61,7 @@ class Square:
         """
         return self.road
 
-    def plantable(self):
+    def is_plantable(self):
         """
         Method to check if a square is plantable
         :return: true if square is plantable, false otherwise
@@ -106,3 +106,10 @@ class Square:
             return -1
         else:
             return 0
+
+    def get_coordinates(self):
+        """
+        Method to get the coordinates of a square
+        :return: tuple of x and y coordinates
+        """
+        return self.x, self.y

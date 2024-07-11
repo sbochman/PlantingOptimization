@@ -31,6 +31,8 @@ class Tree:
         self.price = price
         self.tree_category = tree_category
         self.numerical_representation = numerical_representation
+        self.occupied = []
+        self.fillGridRadius(9, 9) #change to actual height
 
     def getLeafType(self):
         """
@@ -104,22 +106,23 @@ class Tree:
 
     def fillGridRadius(self, grid_width, grid_height):
         """
-        Method to fill the grid with the tree's radius
+        Method to fill the grid with the tree's radius. only take a subset of the total
+        grid space to improve on time complexity
         :return: the grid with the tree's radius
         """
-        numerical_representation = self.getNumericalRepresentation()
-        radius = math.ceil(self.getPlantSize()[1] / 2)
+
+        radius = math.ceil(self.getPlantSize()[1] / 2) #each cell is 0.5 meters so / 2 instead of 4
         center_x, center_y = self.getPlantingLocation()
         min_x = max(0, center_x - radius)
-        max_x = min(grid_width, center_x + radius + 1)
+        max_x = min(grid_width - 1, center_x + radius)
         min_y = max(0, center_y - radius)
-        max_y = min(grid_height, center_y + radius + 1)
+        max_y = min(grid_height - 1, center_y + radius)
 
-        occupied =[]
-        for i in range(min_y, max_y):
-            for j in range(min_x, max_x):
+        for i in range(min_y, max_y + 1):
+            for j in range(min_x, max_x + 1):
                 if (i - center_y)**2 + (j - center_x)**2 <= radius**2:
-                    occupied.append([i, j]) # to represent type of tree and area occupied by that tree print -1 * numerical_representation
+                    self.occupied.append([i, j]) # to represent type of tree and area occupied by that tree print -1 * numerical_representation
 
-        return occupied, -1 * numerical_representation
+    def returnOccupiedSpots(self):
+        return self.occupied, -1 * self.getNumericalRepresentation()
 
