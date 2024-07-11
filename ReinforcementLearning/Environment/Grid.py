@@ -1,12 +1,5 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib import colors
-
-from ScenarioTwoConstraints.Constraints import Constraints
 from Landscape.Square import Square
-#from ScenarioConstraints.ScenarioOneConstraints import ScenarioOneConstraints
-from Trees.TreeGenerator import TreeGenerator
-from Trees.Tree import Tree
 
 class Grid:
     # define a dictionary of tree types of number -> tree type
@@ -35,8 +28,6 @@ class Grid:
         21: "Zelkova Serrata"
     }
 
-
-
     def __init__(self, x, y):
         """
         Constructor for the Grid class
@@ -54,14 +45,16 @@ class Grid:
         :param y: y size of the grid
         :return: the grid
         """
-        self.grid = np.empty((x, y), dtype=object)
+        grid = np.empty((y, x), dtype=object)  # Swap x and y here
         for i in range(y):
             for j in range(x):
                 if i == 9:
-                    self.grid[i, j] = Square(i, j, False, True, True, False, False)
+                    grid[i, j] = Square(j, i, False, True, True, False, False)
+               # elif i == 2 and j == 2:
+               #     grid[i, j] = Square(j, i, False, False, False, False, False)
                 else:
-                    self.grid[i, j] = Square(i, j, False, True, False, False, False)
-        return self.grid
+                    grid[i, j] = Square(j, i, False, True, False, False, False)
+        return grid
 
     def create_numerical_grid(self, x, y):
         """
@@ -70,11 +63,11 @@ class Grid:
         :param y: y size of the grid
         :return: the numerical grid
         """
-        self.grid = np.empty((x, y), dtype=int)
-        for i in range(x):
-            for j in range(y):
-                self.grid[i, j] = 0
-        return self.grid
+        numerical_grid = np.empty((y, x), dtype=int)
+        for i in range(y):
+            for j in range(x):
+                numerical_grid[i, j] = 0
+        return numerical_grid
 
     def plant(self, x, y, tree):
         """
@@ -84,6 +77,15 @@ class Grid:
         :param tree: tree object to plant
         :return: the grid with updated tree planted
         """
-        self.grid[x, y].plant(tree)
+        self.grid[y, x].plant(tree)
         return self.grid
+
+    def print_grid(self):
+        """
+        Method to print the grid
+        """
+        for i in range(self.y):
+            for j in range(self.x):
+                print(self.numerical_grid[i, j], end=" ")
+            print()
 
