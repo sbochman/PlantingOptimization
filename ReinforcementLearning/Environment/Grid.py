@@ -48,10 +48,12 @@ class Grid:
         grid = np.empty((y, x), dtype=object)  # Swap x and y here
         for i in range(y):
             for j in range(x):
-                if i == 9:
+                if j == 29:
                     grid[i, j] = Square(j, i, False, True, True, False, False)
-               # elif i == 2 and j == 2:
-               #     grid[i, j] = Square(j, i, False, False, False, False, False)
+                elif (j > 17 and i > 20) or (j < 10 and i > 24):
+                    grid[i, j] = Square(j, i, False, True, False, True, False)
+                elif j < 5 and i < 10:
+                    grid[i, j] = Square(j, i, False, False, False, False, True)
                 else:
                     grid[i, j] = Square(j, i, False, True, False, False, False)
         return grid
