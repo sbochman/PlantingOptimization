@@ -11,7 +11,7 @@ class GreedyInitGrid:
         self.generator = generator
         self.constraints = fitness_eval
         self.mutations = mutations
-        self.violations =  {"min_trees_to_landscape": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
+        self.violations =  {"min_trees_to_landscape": [1, 2, 7, 19, 20, 21],
                             "min_evergreen_to_all": [1, 2, 3, 4, 5, 6],
                             "min_native_to_all": [13, 20],
                             "min_large_to_all": [2, 3, 7, 21],

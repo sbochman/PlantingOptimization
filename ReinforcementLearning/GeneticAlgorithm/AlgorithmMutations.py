@@ -28,10 +28,14 @@ class AlgorithmMutations:
         numerical_grid_copy = copy.deepcopy(self.env.numerical_grid)
         numerical_grid_copy, plantable = self.spacing.update_coords(occupied_spots, numerical_grid_copy, numerical_representation, (x, y), self.env)
         self.env.numerical_grid = numerical_grid_copy
-        if plantable:
+        #if not plantable, search localized grid to place tree in a plantable area
+        if not plantable:
+            plantable = self.local_search(tree_type, x, y)
+        else:
             for spot in occupied_spots: #update the grid with the new tree object if plantable
                 y, x = spot
                 self.env.plant(x, y, tree)
+        return plantable
             #print('planting tree at: ' + str(x) + ', ' + str(y) + ' with type: ' + str(tree_type))
 
     def overlay_tree(self, tree_type, x, y):
@@ -48,17 +52,18 @@ class AlgorithmMutations:
             self.env.numerical_grid = numerical_grid_copy
 
             #now overlay new tree
-            tree = self.generator.generateTree(self.tree_types_dict[tree_type], (x, y))
-            occupied_spots, numerical_representation = tree.returnOccupiedSpots()
-            numerical_grid_copy = copy.deepcopy(self.env.numerical_grid)
-            numerical_grid_copy, plantable = self.spacing.update_coords(occupied_spots, numerical_grid_copy, numerical_representation, tree.getPlantingLocation(), self.env)
-            self.env.numerical_grid = numerical_grid_copy
+            plantable = self.plant_tree(tree_type, x, y)
+            #tree = self.generator.generateTree(self.tree_types_dict[tree_type], (x, y))
+            #occupied_spots, numerical_representation = tree.returnOccupiedSpots()
+            #numerical_grid_copy = copy.deepcopy(self.env.numerical_grid)
+            #numerical_grid_copy, plantable = self.spacing.update_coords(occupied_spots, numerical_grid_copy, numerical_representation, tree.getPlantingLocation(), self.env)
+            #self.env.numerical_grid = numerical_grid_copy
             if not plantable: #if new tree does not fit, revert back to old tree
                 self.env.numerical_grid = temp_grid
-            else:
-                for spot in occupied_spots:
-                    y, x = spot
-                    self.env.plant(x, y, tree)
+            #else:
+             #   for spot in occupied_spots:
+              #      y, x = spot
+               #     self.env.plant(x, y, tree)
         else: #no tree in position, just plant new tree
             self.plant_tree(tree_type, x, y)
 
@@ -99,6 +104,30 @@ class AlgorithmMutations:
 
         else: #neither spot contains a tree
             pass
+
+
+    def local_search(self, tree_type, curr_x, curr_y):
+        #search in a 4x4 grid around the current position. handle edge cases where the search goes out of bounds
+        min_x = max(0, curr_x - 2)
+        max_x = min(self.env.x, curr_x + 2)
+        min_y = max(0, curr_y - 2)
+        max_y = min(self.env.y, curr_y + 2)
+        for y in range(min_y, max_y):
+            for x in range(min_x, max_x):
+                if x == curr_x and y == curr_y: continue
+                else:
+                    #try and plant tree in position
+                    tree = self.generator.generateTree(self.tree_types_dict[tree_type], (x, y))
+                    occupied_spots, numerical_representation = tree.returnOccupiedSpots()
+                    numerical_grid_copy = copy.deepcopy(self.env.numerical_grid)
+                    numerical_grid_copy, plantable = self.spacing.update_coords(occupied_spots, numerical_grid_copy, numerical_representation, (x, y), self.env)
+                    self.env.numerical_grid = numerical_grid_copy
+                    if plantable:
+                        for spot in occupied_spots:
+                            y, x = spot
+                            self.env.plant(x, y, tree)
+                        return True
+        return False
 
 
     def init_grid(self):
