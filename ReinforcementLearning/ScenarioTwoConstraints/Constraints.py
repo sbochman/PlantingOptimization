@@ -11,7 +11,6 @@ class Constraints:
     def evaluate(self, individual):
         total_cost = 0
         total_co2 = 0
-        print(individual)
         individual = individual.grid.numerical_grid.flatten()
         grid = [individual[i:i+ self.GRID_WIDTH] for i in range(0, len(individual), self.GRID_WIDTH)]
 
@@ -45,12 +44,12 @@ class Constraints:
                     total_crown_area += tree.getCrownArea()
 
         #############################
-        min_trees_to_landscape = 0.2 * (self.GRID_WIDTH * self.GRID_HEIGHT)
+        min_trees_to_landscape = 0.2 * (self.GRID_WIDTH * self.GRID_HEIGHT - 50)
         min_evergreen_to_all = 0.2 * (total_quantity_credit_evergreen + total_quantity_credit_deciduous)
         min_native_to_all = 0.1 * (total_quantity_credit_evergreen + total_quantity_credit_deciduous)
         min_large_to_all = 0.06 * total_trees
-        max_canopy_coverage = 0.6 * (self.GRID_WIDTH - 1 * self.GRID_HEIGHT - 1) #-1 because some regions not plantable
-        min_canopy_coverage = 0.4 * (self.GRID_WIDTH - 1 * self.GRID_HEIGHT - 1) #-1 because some regions not plantable
+        max_canopy_coverage = 0.6 * (self.GRID_WIDTH * self.GRID_HEIGHT - 50) #-1 because some regions not plantable
+        min_canopy_coverage = 0.4 * (self.GRID_WIDTH * self.GRID_HEIGHT - 50) #-1 because some regions not plantable
         min_evergreen_count = 0.015 * (total_evergreen_trees + total_deciduous_trees)
         min_deciduous_count = 0.015 * (total_evergreen_trees + total_deciduous_trees)
         #############################
@@ -117,12 +116,12 @@ class Constraints:
                     total_crown_area += tree.getCrownArea()
 
         #############################
-        min_trees_to_landscape = 0.2 * (self.GRID_WIDTH * self.GRID_HEIGHT) - 50 #-1 because some regions not plantable
+        min_trees_to_landscape = 0.2 * (self.GRID_WIDTH * self.GRID_HEIGHT - 50)  #-1 because some regions not plantable
         min_evergreen_to_all = 0.2 * (total_quantity_credit_evergreen + total_quantity_credit_deciduous)
         min_native_to_all = 0.1 * (total_quantity_credit_evergreen + total_quantity_credit_deciduous)
         min_large_to_all = 0.06 * total_trees
-        max_canopy_coverage = 0.6 * (self.GRID_WIDTH * self.GRID_HEIGHT) - 50 #-1 because some regions not plantable
-        min_canopy_coverage = 0.4 * (self.GRID_WIDTH * self.GRID_HEIGHT) - 50 #-1 because some regions not plantable
+        max_canopy_coverage = 0.6 * (self.GRID_WIDTH * self.GRID_HEIGHT - 50) #-1 because some regions not plantable
+        min_canopy_coverage = 0.4 * (self.GRID_WIDTH * self.GRID_HEIGHT - 50) #-1 because some regions not plantable
         min_evergreen_count = 0.015 * (total_quantity_credit_evergreen + total_quantity_credit_deciduous)
         min_deciduous_count = 0.015 * (total_quantity_credit_evergreen + total_quantity_credit_deciduous)
         #############################

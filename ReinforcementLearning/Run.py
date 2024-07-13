@@ -1,3 +1,4 @@
+from Environment.Grid import Grid
 from Trees.TreeGenerator import TreeGenerator
 from GeneticAlgorithm.CustomGeneticChanges import CustomGeneticChanges
 from GeneticAlgorithm.AlgorithmMutations import AlgorithmMutations
@@ -36,6 +37,16 @@ NUM_TREES = 21
 
 custom_genetic = CustomGeneticChanges(x, y, tree_types_dict, generator)
 custom_genetic.run()
+
+#env = Grid(x, y)
+#mutate = AlgorithmMutations(tree_types_dict, env)
+
+#mutate.plant_tree(1, 10, 10)
+#env.print_grid()
+#print("=========================")
+#mutate.plant_tree(1, 11, 11)
+#env.print_grid()
+
 
 #fitness_eval = Constraints(x, y, COST_LIMIT, tree_types_dict, generator)
 #mutations = AlgorithmMutations(tree_types_dict, env)

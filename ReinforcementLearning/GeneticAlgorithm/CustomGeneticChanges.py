@@ -100,15 +100,20 @@ class CustomGeneticChanges:
         toolbox.register("select", tools.selTournament, tournsize=3)
 
         # Generate the initial population and run the genetic algorithm:
-        population = toolbox.population(n=250)
-        #population[0].grid.print_grid()
-        NGEN = 5
+        population = toolbox.population(n=100)
+        avg_scores = []
+        NGEN = 500
         for gen in range(NGEN):
             offspring = self.varAnd(population, toolbox, cxpb=0.5, mutpb=0.2)
             fits = toolbox.map(toolbox.evaluate, offspring)
+            curr_avg = 0
             for fit, ind in zip(fits, offspring):
                 ind.fitness.values = fit
                 print(ind.fitness.values)
+                curr_avg += ind.fitness.values[0]
+
+            #append top score to best_scores
+            avg_scores.append(curr_avg / 500)
             population = toolbox.select(offspring, k=len(population))
 
         # Find and print the best solution found:
@@ -125,9 +130,18 @@ class CustomGeneticChanges:
         # Print the grid
         best_ind.grid.print_grid()
 
-        print(fitness_eval.validate(best_ind))
+        mutations = AlgorithmMutations(self.trees_types_dict, best_ind.grid)
+        #mutations.visualize_grid()
 
-        self.plot_grid(best_ind.grid.numerical_grid)
+        #plot avg_scores
+        self.plot_scores(avg_scores)
+
+    def plot_scores(self, scores):
+        plt.plot(scores)
+        plt.xlabel('Generation')
+        plt.ylabel('Average Fitness')
+        plt.title('Average Fitness vs Generation')
+        plt.show()
 
     def plot_grid(self, grid):
         array = np.array(grid)
