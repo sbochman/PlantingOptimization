@@ -32,6 +32,7 @@ class AlgorithmMutations:
             for spot in occupied_spots: #update the grid with the new tree object if plantable
                 y, x = spot
                 self.env.plant(x, y, tree)
+            #print('planting tree at: ' + str(x) + ', ' + str(y) + ' with type: ' + str(tree_type))
 
     def overlay_tree(self, tree_type, x, y):
         #find old tree object in position
