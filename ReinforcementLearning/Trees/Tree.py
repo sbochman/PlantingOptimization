@@ -32,7 +32,7 @@ class Tree:
         self.tree_category = tree_category
         self.numerical_representation = numerical_representation
         self.occupied = []
-        self.fillGridRadius(30, 30) #change to actual height
+        self.fillGridRadius(335, 514) #change to actual height
 
     def getLeafType(self):
         """
