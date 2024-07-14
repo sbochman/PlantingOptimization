@@ -2,6 +2,7 @@ import random
 from Environment.Grid import Grid
 import numpy as np
 from deap import base, creator, tools, algorithms
+import json
 import matplotlib.pyplot as plt
 from GeneticAlgorithm.GreedyInitGrid import GreedyInitGrid
 from Trees.TreeSpacing import TreeSpacing
@@ -23,6 +24,8 @@ class CustomGeneticChanges:
 
         #fitness eval init
         self.fitness_eval = Constraints(self.x, self.y, self.COST_LIMIT, self.trees_types_dict, self.generator)
+        self.iterations = 0 #limit number of attempts to find valid starting grid to prevent reaching max recursion depth
+        self.previous_individual = None
 
 
     def mate(self, ind1, ind2):
@@ -102,18 +105,22 @@ class CustomGeneticChanges:
         # Generate the initial population and run the genetic algorithm:
         population = toolbox.population(n=100)
         avg_scores = []
+        best_scores = []
         NGEN = 500
         for gen in range(NGEN):
             offspring = self.varAnd(population, toolbox, cxpb=0.5, mutpb=0.2)
             fits = toolbox.map(toolbox.evaluate, offspring)
             curr_avg = 0
+            best_so_far = 0
             for fit, ind in zip(fits, offspring):
                 ind.fitness.values = fit
                 print(ind.fitness.values)
                 curr_avg += ind.fitness.values[0]
+                best_so_far = max(best_so_far, ind.fitness.values[0])
 
             #append top score to best_scores
             avg_scores.append(curr_avg / 500)
+            best_scores.append(best_so_far)
             population = toolbox.select(offspring, k=len(population))
 
         # Find and print the best solution found:
@@ -130,17 +137,31 @@ class CustomGeneticChanges:
         # Print the grid
         best_ind.grid.print_grid()
 
-        mutations = AlgorithmMutations(self.trees_types_dict, best_ind.grid)
-        #mutations.visualize_grid()
+        #save the best_grid list as a json file
+        with open("best_grid.json", "w") as f:
+            json.dump(best_grid, f)
 
         #plot avg_scores
-        self.plot_scores(avg_scores)
+        self.plot_avg_scores(avg_scores)
+        #save avg scores as img
+        self.plot_best_scores(best_scores)
 
-    def plot_scores(self, scores):
+    def plot_avg_scores(self, scores):
         plt.plot(scores)
         plt.xlabel('Generation')
         plt.ylabel('Average Fitness')
         plt.title('Average Fitness vs Generation')
+        #save as img
+        plt.savefig('average_fitness.png')
+        plt.show()
+
+    def plot_best_scores(self, scores):
+        plt.plot(scores)
+        plt.xlabel('Generation')
+        plt.ylabel('Best Fitness')
+        plt.title('Best Fitness vs Generation')
+        #save as img
+        plt.savefig('best_fitness.png')
         plt.show()
 
     def plot_grid(self, grid):
@@ -174,9 +195,26 @@ class CustomGeneticChanges:
 
     def init_individual(self):
         #init start grid and validate that the grid abides constraints
+        self.iterations+=1
         init_individual = self.create_individual()
         mutations = AlgorithmMutations(self.trees_types_dict, init_individual.grid)
         greedy_alg = GreedyInitGrid(self.x, self.y, init_individual, self.trees_types_dict, self.generator, self.fitness_eval, mutations)
         start_ind = greedy_alg.init_grid()
+        if self.iterations >  650:
+            self.iterations = 0
+            return self.previous_individual #to prevent max recursion depth set current population to the last one
         if start_ind == None: return self.init_individual()
+        #set previous individual to current individual
+        self.previous_individual = start_ind
         return start_ind
+
+    def test(self):
+        #init start grid and validate that the grid abides constraints
+        toolbox = base.Toolbox()
+        creator.create("FitnessMax", base.Fitness, weights=(1.0,))
+        creator.create("Individual", list, fitness=creator.FitnessMax, grid=None)
+
+        #toolbox.register("attr_tree", lambda: next(generation_one))
+        toolbox.register("individual", tools.initIterate, creator.Individual,
+                         self.init_individual)   #self.get_tree_generator(start_ind.grid.numerical_grid))
+        self.init_individual()

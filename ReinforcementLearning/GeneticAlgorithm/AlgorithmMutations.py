@@ -35,6 +35,15 @@ class AlgorithmMutations:
             for spot in occupied_spots: #update the grid with the new tree object if plantable
                 y, x = spot
                 self.env.plant(x, y, tree)
+            if self.env.grid[y][x].pedestrian_road:
+                #set additional 8 blocks up, down, left, right to be unplantable
+                min_i = max(0, y - 8)
+                max_i = min(self.env.y, y + 8)
+                min_j = max(0, x - 8)
+                max_j = min(self.env.x, x + 8)
+                for k in range(min_i, max_i):
+                    for l in range(min_j, max_j):
+                        self.env.grid[k][l].plantable = False
         return plantable
             #print('planting tree at: ' + str(x) + ', ' + str(y) + ' with type: ' + str(tree_type))
 
@@ -53,24 +62,12 @@ class AlgorithmMutations:
 
             #now overlay new tree
             plantable = self.plant_tree(tree_type, x, y)
-            #tree = self.generator.generateTree(self.tree_types_dict[tree_type], (x, y))
-            #occupied_spots, numerical_representation = tree.returnOccupiedSpots()
-            #numerical_grid_copy = copy.deepcopy(self.env.numerical_grid)
-            #numerical_grid_copy, plantable = self.spacing.update_coords(occupied_spots, numerical_grid_copy, numerical_representation, tree.getPlantingLocation(), self.env)
-            #self.env.numerical_grid = numerical_grid_copy
             if not plantable: #if new tree does not fit, revert back to old tree
                 self.env.numerical_grid = temp_grid
-            #else:
-             #   for spot in occupied_spots:
-              #      y, x = spot
-               #     self.env.plant(x, y, tree)
         else: #no tree in position, just plant new tree
             self.plant_tree(tree_type, x, y)
 
     def swap_trees(self, x1, y1, x2, y2):
-        #save current grid if swap is not possible
-        original_temp_grid = copy.deepcopy(self.env.numerical_grid)
-
         #if x1, y1 and x2, y2 is a tree, save the tree object
         tree1 = self.env.grid[y1][x1].tree
         tree2 = self.env.grid[y2][x2].tree
@@ -126,6 +123,15 @@ class AlgorithmMutations:
                         for spot in occupied_spots:
                             y, x = spot
                             self.env.plant(x, y, tree)
+                        if self.env.grid[y][x].pedestrian_road:
+                            #set additional 8 blocks up, down, left, right to be unplantable
+                            min_i = max(0, y - 8)
+                            max_i = min(self.env.y, y + 8)
+                            min_j = max(0, x - 8)
+                            max_j = min(self.env.x, x + 8)
+                            for k in range(min_i, max_i):
+                                for l in range(min_j, max_j):
+                                    self.env.grid[k][l].plantable = False
                         return True
         return False
 

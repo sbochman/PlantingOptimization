@@ -36,6 +36,22 @@ class GreedyInitGrid:
                     tree_type = random.choice(self.areas["hedge"])
                     self.mutations.plant_tree(tree_type, j, i)
 
+
+        #populate road areas with trees. set interval to 4 meters - meaning set additional 8 blocks up, down, left, right to be unplantable
+        for i in range(self.y):
+            for j in range(self.x):
+                if self.individual.grid.grid[i][j].pedestrian_road:
+                    tree_type = random.choice(self.areas["plantable"])
+                    self.mutations.plant_tree(tree_type, j, i)
+                    #set additional 8 blocks up, down, left, right to be unplantable
+                    min_i = max(0, i - 8)
+                    max_i = min(self.y, i + 8)
+                    min_j = max(0, j - 8)
+                    max_j = min(self.x, j + 8)
+                    for k in range(min_i, max_i):
+                        for l in range(min_j, max_j):
+                            self.individual.grid.grid[k][l].plantable = False
+
         #populate big tree areas with large trees
         for i in range(self.y):
             for j in range(self.x):
@@ -58,7 +74,6 @@ class GreedyInitGrid:
                     self.mutations.plant_tree(tree_type, j, i)
                 else:
                     pass
-        #print('not satisfied with constraints, try again')
         return None #not satisfied with constraints, try again
 
 
