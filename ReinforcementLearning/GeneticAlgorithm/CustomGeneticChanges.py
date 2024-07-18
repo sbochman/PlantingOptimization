@@ -19,7 +19,7 @@ class CustomGeneticChanges:
         self.generator = generator
         self.spacing = TreeSpacing(self.trees_types_dict)
 
-        self.COST_LIMIT = 40000
+        self.COST_LIMIT = 530000 #cost limit set in paper
         self.NUM_TREES = 21
 
         #fitness eval init
@@ -81,12 +81,7 @@ class CustomGeneticChanges:
         return individual
 
     def run(self):
-        COST_LIMIT = 800000
-        fitness_eval = Constraints(self.x, self.y, COST_LIMIT, self.trees_types_dict, self.generator)
-
-        #creator.create("FitnessMax", base.Fitness, weights=(1.0,))  # Maximize the fitness
-        #creator.create("Individual", list, fitness=creator.FitnessMax, grid=None)
-
+        fitness_eval = Constraints(self.x, self.y, self.COST_LIMIT, self.trees_types_dict, self.generator)
 
         toolbox = base.Toolbox()
         creator.create("FitnessMax", base.Fitness, weights=(1.0,))
@@ -103,20 +98,21 @@ class CustomGeneticChanges:
         toolbox.register("select", tools.selTournament, tournsize=3)
 
         # Generate the initial population and run the genetic algorithm:
-        population = toolbox.population(n=100)
+        population = toolbox.population(n=250)
         avg_scores = []
         best_scores = []
-        NGEN = 500
+        NGEN = 250
         for gen in range(NGEN):
+            print("Generation: ", gen)
             offspring = self.varAnd(population, toolbox, cxpb=0.5, mutpb=0.2)
             fits = toolbox.map(toolbox.evaluate, offspring)
             curr_avg = 0
             best_so_far = 0
             for fit, ind in zip(fits, offspring):
                 ind.fitness.values = fit
-                print(ind.fitness.values)
                 curr_avg += ind.fitness.values[0]
                 best_so_far = max(best_so_far, ind.fitness.values[0])
+            print("Best so far: ", best_so_far)
 
             #append top score to best_scores
             avg_scores.append(curr_avg / 500)
@@ -135,11 +131,11 @@ class CustomGeneticChanges:
         best_grid = individual_to_grid(best_ind.grid.numerical_grid, self.x, self.y)
 
         # Print the grid
-        best_ind.grid.print_grid()
+        #best_ind.grid.print_grid()
 
         #save the best_grid list as a json file
         with open("best_grid.json", "w") as f:
-            json.dump(best_grid, f)
+            json.dump(best_ind.grid.numerical_grid.tolist(), f)
 
         #plot avg_scores
         self.plot_avg_scores(avg_scores)
@@ -196,25 +192,16 @@ class CustomGeneticChanges:
     def init_individual(self):
         #init start grid and validate that the grid abides constraints
         self.iterations+=1
+        print("Iteration: " + str(self.iterations))
         init_individual = self.create_individual()
         mutations = AlgorithmMutations(self.trees_types_dict, init_individual.grid)
         greedy_alg = GreedyInitGrid(self.x, self.y, init_individual, self.trees_types_dict, self.generator, self.fitness_eval, mutations)
         start_ind = greedy_alg.init_grid()
-        if self.iterations >  650:
+        if self.iterations > 650:
             self.iterations = 0
+            print("No valid configuration found, returning previous individual")
             return self.previous_individual #to prevent max recursion depth set current population to the last one
         if start_ind == None: return self.init_individual()
         #set previous individual to current individual
         self.previous_individual = start_ind
         return start_ind
-
-    def test(self):
-        #init start grid and validate that the grid abides constraints
-        toolbox = base.Toolbox()
-        creator.create("FitnessMax", base.Fitness, weights=(1.0,))
-        creator.create("Individual", list, fitness=creator.FitnessMax, grid=None)
-
-        #toolbox.register("attr_tree", lambda: next(generation_one))
-        toolbox.register("individual", tools.initIterate, creator.Individual,
-                         self.init_individual)   #self.get_tree_generator(start_ind.grid.numerical_grid))
-        self.init_individual()

@@ -57,12 +57,12 @@ class Constraints:
                     total_crown_area += tree.getCrownArea()
 
         #############################
-        min_trees_to_landscape = 0.2 * (self.GRID_WIDTH * self.GRID_HEIGHT - 50)
+        min_trees_to_landscape = 0.2 * (7326) #7326 meters squared is plantable area of apartment complex
         min_evergreen_to_all = 0.2 * (total_quantity_credit_evergreen + total_quantity_credit_deciduous)
         min_native_to_all = 0.1 * (total_quantity_credit_evergreen + total_quantity_credit_deciduous)
         min_large_to_all = 0.06 * total_trees
-        max_canopy_coverage = 0.6 * (self.GRID_WIDTH * self.GRID_HEIGHT - 50) #-1 because some regions not plantable
-        min_canopy_coverage = 0.4 * (self.GRID_WIDTH * self.GRID_HEIGHT - 50) #-1 because some regions not plantable
+        max_canopy_coverage = 0.6 * (7326) #-1 because some regions not plantable
+        min_canopy_coverage = 0.4 * (7326) #-1 because some regions not plantable
         min_evergreen_count = 0.015 * (total_evergreen_trees + total_deciduous_trees)
         min_deciduous_count = 0.015 * (total_evergreen_trees + total_deciduous_trees)
         road_side_planting = 4 * num_trees_road #interval of 4 meters
@@ -71,38 +71,48 @@ class Constraints:
 
         #################TREE RATIO CONSTRAINTS################
         if total_quantity_credit_evergreen + total_quantity_credit_deciduous < min_trees_to_landscape:
+            print("total_quantity_credit_evergreen")
             return -100,
         elif total_quantity_credit_evergreen < min_evergreen_to_all:
+            print("total_quantity_credit_evergreen")
             return -100,
         elif total_quantity_credit_native < min_native_to_all:
+            print("total_quantity_credit_native")
             return -100,
         elif total_large_trees < min_large_to_all:
+            print("total_large_trees")
             return -100,
 
         ################CANOPY COVERAGE CONSTRAINTS############
         if total_crown_area > max_canopy_coverage:
+            print("total_crown_area above")
             return -100,
         elif total_crown_area < min_canopy_coverage:
+            print("total_crown_area below")
             return -100,
 
         ################TREE COUNT CONSTRAINTS################
         if total_evergreen_trees < min_evergreen_count:
+            print("total_evergreen_trees")
             return -100,
         elif total_deciduous_trees < min_deciduous_count:
+            print("total_deciduous_trees")
             return -100,
 
         ############ROAD SIDE PLANTING################
-        if road_side_planting < 148: #meter length of road
-            return -100,
+       # if road_side_planting < 148: #meter length of road
+       #     return -100,
         ############PEDESTRIAN ROAD PLANTING################
-        if pedestrian_road_planting < 186: #meter length of pedestrian road
-            return -100,
+       # if pedestrian_road_planting < 186: #meter length of pedestrian road
+       #     return -100,
         #############Hedge Planting################
         if total_crown_hedge < 360: #meter length of hedge zone
+            print("total_crown_hedge")
             return -100,
 
         ################COST CONSTRAINTS################
         if total_cost > self.cost_limit:
+            print("total_cost")
             return -100,
         return total_co2,
 
@@ -152,12 +162,12 @@ class Constraints:
                     total_crown_area += tree.getCrownArea()
 
         #############################
-        min_trees_to_landscape = 0.2 * (self.GRID_WIDTH * self.GRID_HEIGHT - 50)  #-1 because some regions not plantable
+        min_trees_to_landscape = 0.2 * (7326)
         min_evergreen_to_all = 0.2 * (total_quantity_credit_evergreen + total_quantity_credit_deciduous)
         min_native_to_all = 0.1 * (total_quantity_credit_evergreen + total_quantity_credit_deciduous)
         min_large_to_all = 0.06 * total_trees
-        max_canopy_coverage = 0.6 * (self.GRID_WIDTH * self.GRID_HEIGHT - 50) #-1 because some regions not plantable
-        min_canopy_coverage = 0.4 * (self.GRID_WIDTH * self.GRID_HEIGHT - 50) #-1 because some regions not plantable
+        max_canopy_coverage = 0.6 * (7326) #-1 because some regions not plantable
+        min_canopy_coverage = 0.4 * (7326) #-1 because some regions not plantable
         min_evergreen_count = 0.015 * (total_quantity_credit_evergreen + total_quantity_credit_deciduous)
         min_deciduous_count = 0.015 * (total_quantity_credit_evergreen + total_quantity_credit_deciduous)
         road_side_planting = 4 * num_trees_road #interval of 4 meters
@@ -193,13 +203,13 @@ class Constraints:
             #print("Not enough deciduous trees " + str(total_deciduous_trees) + " < " + str(min_deciduous_count))
             return "min_deciduous_count"
         ############ROAD SIDE PLANTING################
-        if road_side_planting < 148: #meter length of road
+        #if road_side_planting < 148: #meter length of road
             #print("Not enough trees planted by road " + str(road_side_planting) + " < " + str(num_trees_road))
-            return "road_side_planting"
+        #    return "road_side_planting"
         ############PEDESTRIAN ROAD PLANTING################
-        if pedestrian_road_planting < 186: #meter length of pedestrian road
+       # if pedestrian_road_planting < 186: #meter length of pedestrian road
             #print("Not enough trees planted by pedestrian road " + str(pedestrian_road_planting) + " < " + str(num_trees_pedestrian))
-            return "pedestrian_road_planting"
+       #     return "pedestrian_road_planting"
         #############Hedge Planting################
         if total_crown_hedge < 360: #meter length of hedge zone
             #print("Not enough trees planted by hedge " + str(total_crown_hedge) + " < " + str(0.1 * total_crown_area))

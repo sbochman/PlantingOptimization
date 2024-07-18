@@ -23,11 +23,19 @@ class AlgorithmMutations:
 
 
     def plant_tree(self, tree_type, x, y):
+        #if trying to plant on hedge zone or big tree area, ensure tree_type is acceptable
+
+        if self.env.grid[y, x].hedge and tree_type not in [1, 6]:
+            tree_type = random.choice([1, 6])
+        elif self.env.grid[y, x].big_tree_area and tree_type not in [2, 3, 7, 21]:
+            tree_type = random.choice([2, 3, 7, 21])
+
         tree = self.generator.generateTree(self.tree_types_dict[tree_type], (x, y))
         occupied_spots, numerical_representation = tree.returnOccupiedSpots()
         numerical_grid_copy = copy.deepcopy(self.env.numerical_grid)
         numerical_grid_copy, plantable = self.spacing.update_coords(occupied_spots, numerical_grid_copy, numerical_representation, (x, y), self.env)
         self.env.numerical_grid = numerical_grid_copy
+
         #if not plantable, search localized grid to place tree in a plantable area
         if not plantable:
             plantable = self.local_search(tree_type, x, y)
