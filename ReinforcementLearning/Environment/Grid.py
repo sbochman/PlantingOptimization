@@ -29,19 +29,27 @@ class Grid:
         21: "Zelkova Serrata"
     }
 
-    def __init__(self, x, y):
+    def __init__(self, x, y, scenario):
         """
         Constructor for the Grid class
         """
         self.x = x
         self.y = y
         self.landscape_area = x * y
-        with open("Environment/apartment_grid.json", "r") as f:
-            self.apartment_grid = np.array(json.load(f))
-        self.grid = self.create_grid(x, y)
+        if scenario == 1 or scenario == 2:
+            #create apartment grid
+            with open("Environment/apartment_grid.json", "r") as f:
+                self.apartment_grid = np.array(json.load(f))
+            self.grid = self.create_grid_apartment(x, y)
+        elif scenario == 3:
+            # create edinburgh grid
+            with open("Environment/edinburgh_grid.json", "r") as f:
+                self.apartment_grid = np.array(json.load(f))
+            self.grid = self.create_grid_edinburgh(x, y)
+
         self.numerical_grid = self.create_numerical_grid(x, y)
 
-    def create_grid(self, x, y):
+    def create_grid_apartment(self, x, y):
         """
         Method to create a grid of squares
         :param x: x size of the grid
@@ -124,6 +132,18 @@ class Grid:
 
 
         return grid
+
+    def create_grid_edinburgh(self, x, y):
+        """
+       Method to create a grid of squares
+       :param x: x size of the grid
+       :param y: y size of the grid
+       :return: the grid
+       """
+        grid = np.empty((y, x), dtype=object)  # Swap x and y here
+        for i in range(y):
+            for j in range(x):
+                pass
 
     def create_numerical_grid(self, x, y):
         """

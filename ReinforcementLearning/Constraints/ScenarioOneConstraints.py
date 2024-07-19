@@ -1,14 +1,14 @@
 import numpy as np
 from Environment.Grid import Grid
-class Constraints:
+class ScenarioOneConstraints:
 
-    def __init__(self, grid_width, grid_height, cost_limit, tree_types_dict, generator):
+    def __init__(self, grid_width, grid_height, co2_threshold, tree_types_dict, generator):
         self.GRID_WIDTH = grid_width
         self.GRID_HEIGHT = grid_height
-        self.cost_limit = cost_limit
+        self.co2_threshold = co2_threshold
         self.tree_types_dict = tree_types_dict
         self.generator = generator
-        self.planting_areas = Grid(grid_width, grid_height)
+        self.planting_areas = Grid(grid_width, grid_height, 1)
 
     def evaluate(self, individual):
         total_cost = 0
@@ -65,8 +65,6 @@ class Constraints:
         min_canopy_coverage = 0.4 * (7326) #-1 because some regions not plantable
         min_evergreen_count = 0.015 * (total_evergreen_trees + total_deciduous_trees)
         min_deciduous_count = 0.015 * (total_evergreen_trees + total_deciduous_trees)
-        road_side_planting = 4 * num_trees_road #interval of 4 meters
-        pedestrian_road_planting = 4 * num_trees_pedestrian #interval of 4 meters
         #############################
 
         #################TREE RATIO CONSTRAINTS################
@@ -99,22 +97,16 @@ class Constraints:
             print("total_deciduous_trees")
             return -100,
 
-        ############ROAD SIDE PLANTING################
-       # if road_side_planting < 148: #meter length of road
-       #     return -100,
-        ############PEDESTRIAN ROAD PLANTING################
-       # if pedestrian_road_planting < 186: #meter length of pedestrian road
-       #     return -100,
         #############Hedge Planting################
         if total_crown_hedge < 360: #meter length of hedge zone
             print("total_crown_hedge")
             return -100,
 
-        ################COST CONSTRAINTS################
-        if total_cost > self.cost_limit:
+        ################CO2 CONSTRAINT################
+        if total_co2 < self.co2_threshold:
             print("total_cost")
             return -100,
-        return total_co2,
+        return total_cost,
 
     def validate(self, individual):
         total_cost = 0
@@ -170,8 +162,6 @@ class Constraints:
         min_canopy_coverage = 0.4 * (7326) #-1 because some regions not plantable
         min_evergreen_count = 0.015 * (total_quantity_credit_evergreen + total_quantity_credit_deciduous)
         min_deciduous_count = 0.015 * (total_quantity_credit_evergreen + total_quantity_credit_deciduous)
-        road_side_planting = 4 * num_trees_road #interval of 4 meters
-        pedestrian_road_planting = 4 * num_trees_pedestrian #interval of 4 meters
         #############################
 
         #############TREE RATIO CONSTRAINTS################
@@ -202,20 +192,12 @@ class Constraints:
         elif total_deciduous_trees < min_deciduous_count:
             #print("Not enough deciduous trees " + str(total_deciduous_trees) + " < " + str(min_deciduous_count))
             return "min_deciduous_count"
-        ############ROAD SIDE PLANTING################
-        #if road_side_planting < 148: #meter length of road
-            #print("Not enough trees planted by road " + str(road_side_planting) + " < " + str(num_trees_road))
-        #    return "road_side_planting"
-        ############PEDESTRIAN ROAD PLANTING################
-       # if pedestrian_road_planting < 186: #meter length of pedestrian road
-            #print("Not enough trees planted by pedestrian road " + str(pedestrian_road_planting) + " < " + str(num_trees_pedestrian))
-       #     return "pedestrian_road_planting"
         #############Hedge Planting################
         if total_crown_hedge < 360: #meter length of hedge zone
             #print("Not enough trees planted by hedge " + str(total_crown_hedge) + " < " + str(0.1 * total_crown_area))
             return "hedge_planting"
-        ############COST CONSTRAINTS################
-        if total_cost > self.cost_limit:
+        ############CO2 CONSTRAINT################
+        if total_co2 < self.co2_threshold:
             #print("Cost exceeds " + str(total_cost))
             return "total_cost"
 
@@ -223,10 +205,10 @@ class Constraints:
 
         #############VALID################
         print("VALID --- STATISTICS")
-        print("Total CO2 Intake: " + str(total_co2))
+        print("Total CO2 Intake: " + str(total_co2) + " < " + str(self.co2_threshold))
         print("Trees to landscape - " + str(total_quantity_credit_evergreen) + " + " + str(total_quantity_credit_deciduous) + " > " + str(min_trees_to_landscape))
         print("Evergreen to all - " + str(total_quantity_credit_evergreen) + " > " +  str(min_evergreen_to_all))
         print("Native to all - " + str(total_quantity_credit_native) + " > "  + str(min_native_to_all))
         print("Large to all - " + str(total_large_trees) + " > " + str(min_large_to_all))
         print("Canopy coverage - " + str(total_crown_area) + " < " + str(max_canopy_coverage) + " and > " + str(min_canopy_coverage))
-        print("Cost - " + str(total_cost) + " < " + str(self.cost_limit))
+        print("Cost - " + str(total_cost))

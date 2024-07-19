@@ -3,7 +3,7 @@ from Trees.Tree import Tree
 from Environment.Grid import Grid
 import random
 import numpy as np
-from ScenarioTwoConstraints.Constraints import Constraints
+from Constraints.ScenarioTwoConstraints import Constraints
 from deap import base, creator, tools, algorithms
 random.seed(100)
 
