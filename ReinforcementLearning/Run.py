@@ -35,31 +35,31 @@ tree_types_dict = {
 tree_types_edi_dict = {
     0: "None",
     1: "Abies Holophylla",
-    2: "Taxus Cuspidata",
-    3: "White Pine",
-    4: "Acer Palmatum",
-    5: "Betula Platyphylla",
-    6: "Cercidiphyllum Japonicum",
-    7: "Chionanthus Retusus",
-    8: "Cornus Officinalis",
-    9: "Ginkgo Biloba",
-    10: "Kobus Magnolia",
-    11: "Liriodendron Tulipifera",
-    12: "Oak",
-    13: "Persimmon",
-    14: "Prunus Armeniaca",
-    15: "Sophora Japonica",
-    16: "Zelkova Serrata"
+    5: "Taxus Cuspidata",
+    6: "White Pine",
+    7: "Acer Palmatum",
+    8: "Betula Platyphylla",
+    9: "Cercidiphyllum Japonicum",
+    11: "Chionanthus Retusus",
+    12: "Cornus Officinalis",
+    13: "Ginkgo Biloba",
+    14: "Kobus Magnolia",
+    15: "Liriodendron Tulipifera",
+    16: "Oak",
+    17: "Persimmon",
+    18: "Prunus Armeniaca",
+    20: "Sophora Japonica",
+    21: "Zelkova Serrata"
 }
 
 generator = TreeGenerator()
-x = 335
-y = 514
-COST_LIMIT = 40000
-NUM_TREES = 21
+x = 202
+y = 121
+COST_LIMIT = 60000
+NUM_TREES = 16
 
-custom_genetic = CustomGeneticChanges(x, y, tree_types_dict, generator, 1)
-custom_genetic.run_scenario_one()
+custom_genetic = CustomGeneticChanges(x, y, tree_types_edi_dict, generator, 3)
+custom_genetic.run_edinburgh_scenario()
 
 
 

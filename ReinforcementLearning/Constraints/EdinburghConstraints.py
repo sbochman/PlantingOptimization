@@ -44,11 +44,11 @@ class EdinburghConstraints:
                     total_crown_area += tree.getCrownArea()
 
         #############################
-        min_trees_to_landscape = 0.2 * (7326) #7326 meters squared is plantable area of apartment complex
+        min_trees_to_landscape = 0.001 * (23358) #7326 meters squared is plantable area of apartment complex
         min_evergreen_to_all = 0.2 * (total_quantity_credit_evergreen + total_quantity_credit_deciduous)
         min_large_to_all = 0.06 * total_trees
-        max_canopy_coverage = 0.6 * (7326) #-1 because some regions not plantable
-        min_canopy_coverage = 0.4 * (7326) #-1 because some regions not plantable
+        max_canopy_coverage = 0.015 * (23358) #-1 because some regions not plantable
+        min_canopy_coverage = 0.012 * (23358) #-1 because some regions not plantable
         min_evergreen_count = 0.015 * (total_evergreen_trees + total_deciduous_trees)
         min_deciduous_count = 0.015 * (total_evergreen_trees + total_deciduous_trees)
         #############################
@@ -119,13 +119,13 @@ class EdinburghConstraints:
                     total_crown_area += tree.getCrownArea()
 
         #############################
-        min_trees_to_landscape = 0.2 * (7326)
+        min_trees_to_landscape = 0.001 * (23358) #7326 meters squared is plantable area of apartment complex
         min_evergreen_to_all = 0.2 * (total_quantity_credit_evergreen + total_quantity_credit_deciduous)
         min_large_to_all = 0.06 * total_trees
-        max_canopy_coverage = 0.6 * (7326) #-1 because some regions not plantable
-        min_canopy_coverage = 0.4 * (7326) #-1 because some regions not plantable
-        min_evergreen_count = 0.015 * (total_quantity_credit_evergreen + total_quantity_credit_deciduous)
-        min_deciduous_count = 0.015 * (total_quantity_credit_evergreen + total_quantity_credit_deciduous)
+        max_canopy_coverage = 0.015 * (23358) #-1 because some regions not plantable
+        min_canopy_coverage = 0.012 * (23358) #-1 because some regions not plantable
+        min_evergreen_count = 0.015 * (total_evergreen_trees + total_deciduous_trees)
+        min_deciduous_count = 0.015 * (total_evergreen_trees + total_deciduous_trees)
         #############################
 
         #############TREE RATIO CONSTRAINTS################

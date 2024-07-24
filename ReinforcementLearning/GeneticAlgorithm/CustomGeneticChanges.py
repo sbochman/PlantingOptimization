@@ -24,7 +24,7 @@ class CustomGeneticChanges:
         self.scenario = scenario
         self.COST_LIMIT = 530000 #cost limit set in paper
         self.co2_threshold = 3500
-        self.NUM_TREES = 21
+        self.NUM_TREES = 16 #number of tree types for park scenario
 
         self.iterations = 0 #limit number of attempts to find valid starting grid to prevent reaching max recursion depth
         self.previous_individual = None
@@ -67,12 +67,12 @@ class CustomGeneticChanges:
         #return offspring1, offspring2 as flattened arrays
         return ind1, ind2
 
-    def mutate(self, individual, low, up, indpb):
+    def mutate(self, individual, indpb):
         mutated = AlgorithmMutations(self.trees_types_dict, individual.grid)
         for i in range(individual.grid.y):
             for j in range(individual.grid.x):
                 if random.random() < indpb:
-                    tree_type = random.randint(low, up)
+                    tree_type = random.choice([1,5,6,7,8,9,11,12,13,14,15,16,17,18,20,21])
                     mutated.overlay_tree(tree_type, j, i)
         return individual
 
@@ -84,17 +84,21 @@ class CustomGeneticChanges:
 
 
     def run_edinburgh_scenario(self):
-        cost = 50000 #change
+        cost = 50000
         fitness_eval = EdinburghConstraints(self.x, self.y, cost, self.trees_types_dict, self.generator)
 
         toolbox = base.Toolbox()
         creator.create("FitnessMax", base.Fitness, weights=(1.0,))
         creator.create("Individual", list, fitness=creator.FitnessMax, grid=None)
-        toolbox.register("individual", tools.initIterate, creator.Individual, self.init_individual_edinburgh(fitness_eval))
-        toolbox.register("population", tools.initRepeat, list, self.init_individual_edinburgh(fitness_eval))
+
+        #toolbox.register("attr_tree", lambda: next(generation_one))
+        toolbox.register("individual", tools.initIterate, creator.Individual,
+                         lambda: self.init_individual_edinburgh(fitness_eval))
+        toolbox.register("population", tools.initRepeat, list, lambda: self.init_individual_edinburgh(fitness_eval))
+
         toolbox.register("evaluate", fitness_eval.evaluate)
         toolbox.register("mate", self.mate)
-        toolbox.register("mutate", self.mutate, low=0, up=len(self.trees_types_dict), indpb=0.05)
+        toolbox.register("mutate", self.mutate, indpb=0.05)
         toolbox.register("select", tools.selTournament, tournsize=3)
 
         # Generate the initial population and run the genetic algorithm:
@@ -102,7 +106,7 @@ class CustomGeneticChanges:
         population = toolbox.population(n=population_size)
         avg_scores = []
         best_scores = []
-        NGEN = 50
+        NGEN = 250
         for gen in range(NGEN):
             print("Generation: ", gen)
             offspring = self.varAnd(population, toolbox, cxpb=0.5, mutpb=0.2)
@@ -195,7 +199,7 @@ class CustomGeneticChanges:
         plt.ylabel('Average Fitness')
         plt.title('Average Fitness vs Generation')
         #save as img
-        plt.savefig('average_fitness_s1_500.png')
+        plt.savefig('average_fitness_s3_500.png')
         plt.show()
 
     def plot_best_scores(self, scores):
@@ -204,7 +208,7 @@ class CustomGeneticChanges:
         plt.ylabel('Best Fitness')
         plt.title('Best Fitness vs Generation')
         #save as img
-        plt.savefig('best_fitness_s1_500.png')
+        plt.savefig('best_fitness_s3_500.png')
         plt.show()
 
     def plot_grid(self, grid):

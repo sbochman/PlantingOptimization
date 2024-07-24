@@ -25,10 +25,10 @@ class AlgorithmMutations:
     def plant_tree(self, tree_type, x, y):
         #if trying to plant on hedge zone or big tree area, ensure tree_type is acceptable
 
-        if self.env.grid[y, x].hedge and tree_type not in [1, 6]:
-            tree_type = random.choice([1, 6])
-        elif self.env.grid[y, x].big_tree_area and tree_type not in [2, 3, 7, 21]:
-            tree_type = random.choice([2, 3, 7, 21])
+        #if self.env.grid[y, x].hedge and tree_type not in [1, 6]:
+         #   tree_type = random.choice([1, 6])
+        #elif self.env.grid[y, x].big_tree_area and tree_type not in [2, 3, 7, 21]:
+        #    tree_type = random.choice([2, 3, 7, 21])
 
         tree = self.generator.generateTree(self.tree_types_dict[tree_type], (x, y))
         occupied_spots, numerical_representation = tree.returnOccupiedSpots()
@@ -151,7 +151,8 @@ class AlgorithmMutations:
                 #choose a random val between 0 and 22
                 chance = random.choice([1, 2, 3, 4, 5])
                 if chance < 4: continue
-                val = random.randint(0, 21)
+                #val = random.randint(0, 21)
+                val = random.randint(0, 16)
                 tree = self.generator.generateTree(self.tree_types_dict[val], (x, y))
                 #check if tree can be planted at location
                 occupied_spots, numerical_representation = tree.returnOccupiedSpots()
