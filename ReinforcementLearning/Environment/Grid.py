@@ -43,8 +43,8 @@ class Grid:
             self.grid = self.create_grid_apartment(x, y)
         elif scenario == 3:
             # create edinburgh grid
-            with open("Environment/edinburgh_grid.json", "r") as f:
-                self.apartment_grid = np.array(json.load(f))
+            with open("Environment/park_grid.json", "r") as f:
+                self.park_grid = np.array(json.load(f))
             self.grid = self.create_grid_edinburgh(x, y)
 
         self.numerical_grid = self.create_numerical_grid(x, y)
@@ -143,7 +143,12 @@ class Grid:
         grid = np.empty((y, x), dtype=object)  # Swap x and y here
         for i in range(y):
             for j in range(x):
-                pass
+                #if 255, then not plantable
+                if self.park_grid[i, j] == 255:
+                    grid[i, j] = Square(j, i, False, False, False, False, False)
+                else:
+                    grid[i, j] = Square(j, i, False, True, False, False, False)
+        return grid
 
     def create_numerical_grid(self, x, y):
         """
