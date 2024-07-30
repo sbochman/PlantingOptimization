@@ -27,6 +27,9 @@ class ScenarioTwoConstraints:
         total_crown_hedge = 0
         num_trees_road = 0
         num_trees_pedestrian = 0
+        num_native_road = 0
+        total_native_road_interval = 0
+        total_pedestrian_road_interval = 0
 
         for y, row in enumerate(grid):
             for x, cell in enumerate(row):
@@ -50,8 +53,12 @@ class ScenarioTwoConstraints:
                         total_crown_hedge += tree.getCrownArea()
                     elif self.planting_areas.grid[y][x].road: #check if square is road
                         num_trees_road += 1
+                        if tree.getTreeCategory() == "Native":
+                            num_native_road += 1
+                            total_native_road_interval += tree.plant_size[1]
                     elif self.planting_areas.grid[y][x].pedestrian_road: #check if square is pedestrian road
                         num_trees_pedestrian += 1
+                        total_pedestrian_road_interval += tree.plant_size[1]
 
                     total_trees += 1
                     total_crown_area += tree.getCrownArea()
@@ -96,6 +103,14 @@ class ScenarioTwoConstraints:
         elif total_deciduous_trees < min_deciduous_count:
             print("total_deciduous_trees")
             return -100,
+        ############ROAD SIDE PLANTING################
+        if num_native_road * (total_native_road_interval / num_native_road) < 148: #meter length of road. keep 10 meter interval between. seems as though paper used 10 meters given 20 native trees planted
+            print("Not enough trees planted by road " + str(num_native_road * 2) + " < " + str(148))
+            return -100,
+        ############PEDESTRIAN ROAD PLANTING################
+        if num_trees_pedestrian * (total_pedestrian_road_interval / num_trees_pedestrian) < 186: #meter length of pedestrian road. multiple by 4 since the interva is set to 8 blocks (4 meters)
+            print("Not enough trees planted by pedestrian road " + str(num_trees_pedestrian * 2) + " < " + str(186))
+            return -100,
         #############Hedge Planting################
         if total_crown_hedge < 360: #meter length of hedge zone
             print("total_crown_hedge")
@@ -123,6 +138,9 @@ class ScenarioTwoConstraints:
         total_crown_hedge = 0
         num_trees_road = 0
         num_trees_pedestrian = 0
+        num_native_road = 0
+        total_native_road_interval = 0
+        total_pedestrian_road_interval = 0
 
         for y, row in enumerate(grid):
             for x, cell in enumerate(row):
@@ -146,8 +164,12 @@ class ScenarioTwoConstraints:
                         total_crown_hedge += tree.getCrownArea()
                     elif self.planting_areas.grid[y][x].road: #check if square is road
                         num_trees_road += 1
+                        if tree.getTreeCategory() == "Native":
+                            num_native_road += 1
+                            total_native_road_interval += tree.plant_size[1]
                     elif self.planting_areas.grid[y][x].pedestrian_road: #check if square is pedestrian road
                         num_trees_pedestrian += 1
+                        total_pedestrian_road_interval += tree.plant_size[1]
 
                     total_trees += 1
                     total_crown_area += tree.getCrownArea()
@@ -179,7 +201,7 @@ class ScenarioTwoConstraints:
             return "min_trees_to_landscape"
         ############CANOPY COVERAGE CONSTRAINTS############
         if total_crown_area > max_canopy_coverage:
-            #print("Canopy coverage exceeds " + str(total_crown_area))
+            print("Canopy coverage exceeds " + str(max_canopy_coverage) + " at " + str(total_crown_area))
             return "max_canopy_coverage"
         elif total_crown_area < min_canopy_coverage:
             #print("Canopy coverage below " + str(total_crown_area))
@@ -192,13 +214,13 @@ class ScenarioTwoConstraints:
             #print("Not enough deciduous trees " + str(total_deciduous_trees) + " < " + str(min_deciduous_count))
             return "min_deciduous_count"
         ############ROAD SIDE PLANTING################
-        #if road_side_planting < 148: #meter length of road
-            #print("Not enough trees planted by road " + str(road_side_planting) + " < " + str(num_trees_road))
-        #    return "road_side_planting"
+        if num_native_road * (total_native_road_interval / num_native_road) < 148: #meter length of road. keep 10 meter interval between. seems as though paper used 10 meters given 20 native trees planted
+            #print("Not enough trees planted by road " + str(num_native_road * 2) + " < " + str(148))
+            return "road_side_planting"
         ############PEDESTRIAN ROAD PLANTING################
-       # if pedestrian_road_planting < 186: #meter length of pedestrian road
-            #print("Not enough trees planted by pedestrian road " + str(pedestrian_road_planting) + " < " + str(num_trees_pedestrian))
-       #     return "pedestrian_road_planting"
+        if num_trees_pedestrian * (total_pedestrian_road_interval / num_trees_pedestrian) < 186: #meter length of pedestrian road. multiple by 4 since the interva is set to 8 blocks (4 meters)
+            print("Not enough trees planted by pedestrian road " + str(num_trees_pedestrian * (total_pedestrian_road_interval / num_trees_pedestrian)) + " < " + str(186))
+            return "pedestrian_road_planting"
         #############Hedge Planting################
         if total_crown_hedge < 360: #meter length of hedge zone
             #print("Not enough trees planted by hedge " + str(total_crown_hedge) + " < " + str(0.1 * total_crown_area))

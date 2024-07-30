@@ -59,7 +59,7 @@ class Grid:
         grid = np.empty((y, x), dtype=object)  # Swap x and y here
         for i in range(y):
             for j in range(x):
-                if self.apartment_grid[i, j] == 101 and (j > 314 or i < 22): #yellow grayscale value
+                if self.apartment_grid[i, j] == 101 and ((j > 316 and j < 320) or i < 22): #yellow grayscale value
                     grid[i, j] = Square(j, i, False, True, True, False, False)
                 elif self.apartment_grid[i, j] == 63: #red grayscale value
                     grid[i, j] = Square(j, i, False, True, False, True, False)
@@ -77,7 +77,7 @@ class Grid:
         #(161, 107)     (166, 107)
         #loop between these coordinates and set square to be by pedestrian_road
         for i in range(63, 108): #fixing pedestiran road that is not set
-            for j in range(161, 167):
+            for j in range(161, 165):
                 grid[i, j].pedestrian_road = True
 
         #(167, 101)     (274, 101)
@@ -114,7 +114,7 @@ class Grid:
         #(162, 279)   (167, 279)
         #(162, 324)   (167, 324)
         for i in range(279, 325):
-            for j in range(162, 168):
+            for j in range(162, 166):
                 grid[i, j].pedestrian_road = True
 
         #(167, 319)   (314, 319)
@@ -126,10 +126,51 @@ class Grid:
 
         #(318, 21)   (324, 21)
         #(318, 438)   (324, 438)
-        for i in range(21, 439):
-            for j in range(318, 325):
-                grid[i, j].hedge = True
+       # for i in range(21, 439):
+       #     for j in range(318, 320):
+       #         grid[i, j].hedge = True
 
+        #(162, 171(  (162, 215)
+        #(166, 171)   (166, 215)
+        for i in range(171, 216):
+            for j in range(162, 167):
+                grid[i, j].pedestrian_road = True
+
+
+        #(145, 217)    (145, 258)
+        #(149, 217)    (149, 258)
+        for i in range(217, 259):
+            for j in range(145, 150):
+                grid[i, j].pedestrian_road = True
+
+
+
+        #fill in the gaps by checking if the surrounding squares are of certain type and fill in the square as that type
+
+        for i in range(3, self.y-3):
+            for j in range(3, self.x-3):
+                if not grid[i, j].road and (grid[i-1, j].road and grid[i+1, j].road and grid[i, j-1].road and grid[i, j+1].road) or (grid[i-2, j].road and grid[i+2, j].road and grid[i, j-2].road and grid[i, j+2].road):
+                    grid[i, j].road = True
+
+        for i in range(3, self.y-3):
+            for j in range(3, self.x-3):
+                if not grid[i, j].pedestrian_road and (grid[i-1, j].pedestrian_road and grid[i+1, j].pedestrian_road and grid[i, j-1].pedestrian_road and grid[i, j+1].pedestrian_road) or (grid[i-2, j].pedestrian_road and grid[i+2, j].pedestrian_road and grid[i, j-2].pedestrian_road and grid[i, j+2].pedestrian_road):
+                    grid[i, j].pedestrian_road = True
+
+        for i in range(3, self.y-3):
+            for j in range(3, self.x-3):
+                if not grid[i, j].hedge and grid[i-1, j].hedge and grid[i+1, j].hedge and grid[i, j-1].hedge and grid[i, j+1].hedge:
+                    grid[i, j].hedge = True
+
+        for i in range(3, self.y-3):
+            for j in range(3, self.x-3):
+                if not grid[i, j].big_tree_area and grid[i-1, j].big_tree_area and grid[i+1, j].big_tree_area and grid[i, j-1].big_tree_area and grid[i, j+1].big_tree_area:
+                    grid[i, j].big_tree_area = True
+
+        for i in range(3, self.y-3):
+            for j in range(3, self.x-3):
+                if not grid[i, j].plantable and (grid[i-1, j].plantable and grid[i+1, j].plantable and grid[i, j-1].plantable and grid[i, j+1].plantable) or (grid[i-2, j].plantable and grid[i+2, j].plantable and grid[i, j-2].plantable and grid[i, j+2].plantable):
+                    grid[i, j].plantable = True
 
         return grid
 
