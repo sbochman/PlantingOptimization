@@ -106,7 +106,7 @@ class CustomGeneticChanges:
         population = toolbox.population(n=population_size)
         avg_scores = []
         best_scores = []
-        NGEN = 250
+        NGEN = 100
         for gen in range(NGEN):
             print("Generation: ", gen)
             offspring = self.varAnd(population, toolbox, cxpb=0.5, mutpb=0.2)
@@ -147,18 +147,15 @@ class CustomGeneticChanges:
         creator.create("FitnessMax", base.Fitness, weights=(1.0,))
         creator.create("Individual", list, fitness=creator.FitnessMax, grid=None)
 
-        #toolbox.register("attr_tree", lambda: next(generation_one))
-        toolbox.register("individual", tools.initIterate, creator.Individual,
-                         self.init_individual_scenario_two(fitness_eval))   #self.get_tree_generator(start_ind.grid.numerical_grid))   #, n=GRID_WIDTH*GRID_HEIGHT)
-        toolbox.register("population", tools.initRepeat, list, self.init_individual_scenario_two(fitness_eval))
-
+        toolbox.register("individual", tools.initIterate, creator.Individual, self.init_individual_scenario_two(fitness_eval))
+        toolbox.register("population", tools.initRepeat, list, lambda: self.init_individual_scenario_two(fitness_eval))
         toolbox.register("evaluate", fitness_eval.evaluate)
         toolbox.register("mate", self.mate)
         toolbox.register("mutate", self.mutate, low=0, up=self.NUM_TREES, indpb=0.05)
         toolbox.register("select", tools.selTournament, tournsize=3)
 
         # Generate the initial population and run the genetic algorithm:
-        population = toolbox.population(n=1)
+        population = toolbox.population(n=500)
         avg_scores = []
         best_scores = []
         NGEN = 1

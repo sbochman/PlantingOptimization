@@ -53,15 +53,47 @@ tree_types_edi_dict = {
 }
 
 generator = TreeGenerator()
-x = 202
-y = 121
+x = 335
+y = 514
 COST_LIMIT = 60000
 NUM_TREES = 16
 
-custom_genetic = CustomGeneticChanges(x, y, tree_types_edi_dict, generator, 3)
-custom_genetic.run_edinburgh_scenario()
+custom_genetic = CustomGeneticChanges(x, y, tree_types_dict, generator, 2)
+custom_genetic.run_scenario_two()
 
 
+import matplotlib.pyplot as plt
+env = Grid(x, y, 2)
+
+#make numerical grid of env
+numerical_grid = np.zeros((y, x))
+for i in range(y):
+    for j in range(x):
+        if env.grid[i][j].hedge:
+            numerical_grid[i][j] = 2
+        elif env.grid[i][j].big_tree_area:
+            numerical_grid[i][j] = 3
+        elif env.grid[i][j].road:
+            numerical_grid[i][j] = 4
+        elif env.grid[i][j].pedestrian_road:
+            numerical_grid[i][j] = 5
+        elif env.grid[i][j].plantable:
+            numerical_grid[i][j] = 1
+        else:
+            numerical_grid[i][j] = 0
+
+
+'''
+#print the grid. a different color for each plantable region.
+#0 is unplantable, 1 is plantable, 2 is hedge, 3 is large tree area, 4 is road, 5 is pedestrian road
+cmap = ListedColormap(['white', 'blue', 'purple', 'red', 'green', 'orange'])
+bounds = [-0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5]
+norm = BoundaryNorm(bounds, cmap.N)
+plt.figure(figsize=(9, 9))
+plt.imshow(numerical_grid, cmap=cmap, norm=norm, aspect='equal')
+plt.grid(True, which='both', color='black', linestyle='-', linewidth=2)
+plt.show()
+'''
 
 
 

@@ -48,12 +48,16 @@ class EdinburghConstraints:
         min_evergreen_to_all = 0.2 * (total_quantity_credit_evergreen + total_quantity_credit_deciduous)
         min_large_to_all = 0.06 * total_trees
         max_canopy_coverage = 0.015 * (23358) #-1 because some regions not plantable
-        min_canopy_coverage = 0.012 * (23358) #-1 because some regions not plantable
+        min_canopy_coverage = 0.008 * (23358) #-1 because some regions not plantable
         min_evergreen_count = 0.015 * (total_evergreen_trees + total_deciduous_trees)
         min_deciduous_count = 0.015 * (total_evergreen_trees + total_deciduous_trees)
         #############################
 
         #################TREE RATIO CONSTRAINTS################
+        if total_trees > 45:
+            print("too_many_trees")
+            return -100,
+
         if total_quantity_credit_evergreen + total_quantity_credit_deciduous < min_trees_to_landscape:
             print("total_quantity_credit_evergreen")
             return -100,
@@ -123,12 +127,15 @@ class EdinburghConstraints:
         min_evergreen_to_all = 0.2 * (total_quantity_credit_evergreen + total_quantity_credit_deciduous)
         min_large_to_all = 0.06 * total_trees
         max_canopy_coverage = 0.015 * (23358) #-1 because some regions not plantable
-        min_canopy_coverage = 0.012 * (23358) #-1 because some regions not plantable
+        min_canopy_coverage = 0.008 * (23358) #-1 because some regions not plantable
         min_evergreen_count = 0.015 * (total_evergreen_trees + total_deciduous_trees)
         min_deciduous_count = 0.015 * (total_evergreen_trees + total_deciduous_trees)
         #############################
 
         #############TREE RATIO CONSTRAINTS################
+
+        if total_trees > 45:
+            return "too_many_trees"
 
         if total_quantity_credit_evergreen < min_evergreen_to_all:
             #print("Not enough evergreen trees to all trees " + str(total_quantity_credit_evergreen) + " < " +  str(min_evergreen_to_all))

@@ -43,15 +43,15 @@ class AlgorithmMutations:
             for spot in occupied_spots: #update the grid with the new tree object if plantable
                 y, x = spot
                 self.env.plant(x, y, tree)
-            if self.env.grid[y][x].pedestrian_road:
+            #if self.env.grid[y][x].pedestrian_road:
                 #set additional 8 blocks up, down, left, right to be unplantable
-                min_i = max(0, y - 8)
-                max_i = min(self.env.y, y + 8)
-                min_j = max(0, x - 8)
-                max_j = min(self.env.x, x + 8)
-                for k in range(min_i, max_i):
-                    for l in range(min_j, max_j):
-                        self.env.grid[k][l].plantable = False
+               # min_i = max(0, y - 8)
+               # max_i = min(self.env.y, y + 8)
+               # min_j = max(0, x - 8)
+               #max_j = min(self.env.x, x + 8)
+                #for k in range(min_i, max_i):
+               #     for l in range(min_j, max_j):
+               #         self.env.grid[k][l].plantable = False
         return plantable
             #print('planting tree at: ' + str(x) + ', ' + str(y) + ' with type: ' + str(tree_type))
 
@@ -131,15 +131,15 @@ class AlgorithmMutations:
                         for spot in occupied_spots:
                             y, x = spot
                             self.env.plant(x, y, tree)
-                        if self.env.grid[y][x].pedestrian_road:
+                        #if self.env.grid[y][x].pedestrian_road:
                             #set additional 8 blocks up, down, left, right to be unplantable
-                            min_i = max(0, y - 8)
-                            max_i = min(self.env.y, y + 8)
-                            min_j = max(0, x - 8)
-                            max_j = min(self.env.x, x + 8)
-                            for k in range(min_i, max_i):
-                                for l in range(min_j, max_j):
-                                    self.env.grid[k][l].plantable = False
+                            #min_i = max(0, y - 8)
+                            #max_i = min(self.env.y, y + 8)
+                            #min_j = max(0, x - 8)
+                            #max_j = min(self.env.x, x + 8)
+                            #for k in range(min_i, max_i):
+                           #     for l in range(min_j, max_j):
+                           #         self.env.grid[k][l].plantable = False
                         return True
         return False
 
