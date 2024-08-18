@@ -2,7 +2,7 @@ from Trees.Tree import Tree
 
 class SingletonMeta(type):
     """
-    Singleton metaclass to ensure that only one instance of the TreeGenerator class is created
+    Singleton metaclass to ensure that only one instance of the TreeGenerator class is created.
     """
     _instances = {}
 
@@ -27,8 +27,9 @@ class TreeGenerator(metaclass=SingletonMeta):
     def generateTree(self, species, planting_location):
         """
         Method to generate trees
-        :param species: species of the tree
-        :param planting_location: (x, y) coordinates of the location where tree is planted
+
+        :param species (int): species of the tree
+        :param planting_location (int, int): (x, y) coordinates of the location where tree is planted
         :return: Tree object
         """
         if species == "Abies Holophylla":
@@ -79,6 +80,7 @@ class TreeGenerator(metaclass=SingletonMeta):
     def abiesHolophylla(self, planting_location):
         """
         Method to generate Abies Holophylla trees
+
         :param plantingLocation: (x, y) coordinates of the location where tree is planted
         :return: Tree object
         """
@@ -87,6 +89,7 @@ class TreeGenerator(metaclass=SingletonMeta):
     def pinusDesniflora1(self, planting_location):
         """
         Method to generate Pinus Desniflora trees
+
         :param plantingLocation: (x, y) coordinates of the location where tree is planted
         :return: Tree object
         """
@@ -95,6 +98,7 @@ class TreeGenerator(metaclass=SingletonMeta):
     def pinusDesniflora2(self, planting_location):
         """
         Method to generate Pinus Desniflora trees
+
         :param plantingLocation: (x, y) coordinates of the location where tree is planted
         :return: Tree object
         """
@@ -103,6 +107,7 @@ class TreeGenerator(metaclass=SingletonMeta):
     def pinusDesnifloraGlobosa(self, planting_location):
         """
         Method to generate Pinus Desniflora trees
+
         :param plantingLocation: (x, y) coordinates of the location where tree is planted
         :return: Tree object
         """
@@ -111,6 +116,7 @@ class TreeGenerator(metaclass=SingletonMeta):
     def taxusCuspidata(self, planting_location):
         """
         Method to generate Taxus Cuspidata trees
+
         :param plantingLocation: (x, y) coordinates of the location where tree is planted
         :return: Tree object
         """
@@ -119,6 +125,7 @@ class TreeGenerator(metaclass=SingletonMeta):
     def whitePine(self, planting_location):
         """
         Method to generate White Pine trees
+
         :param plantingLocation: (x, y) coordinates of the location where tree is planted
         :return: Tree object
         """
@@ -127,6 +134,7 @@ class TreeGenerator(metaclass=SingletonMeta):
     def acerPalmatum(self, planting_location):
         """
         Method to generate Acer Palmatum trees
+
         :param plantingLocation: (x, y) coordinates of the location where tree is planted
         :return: Tree object
         """
@@ -135,6 +143,7 @@ class TreeGenerator(metaclass=SingletonMeta):
     def betulaPlatyphylla(self, planting_location):
         """
         Method to generate Betula Platyphylla trees
+
         :param plantingLocation: (x, y) coordinates of the location where tree is planted
         :return: Tree object
         """
@@ -143,6 +152,7 @@ class TreeGenerator(metaclass=SingletonMeta):
     def cercidiphyllumJaponicum(self, planting_location):
         """
         Method to generate Cercidiphyllum Japonicum trees
+
         :param plantingLocation: (x, y) coordinates of the location where tree is planted
         :return: Tree object
         """
@@ -151,6 +161,7 @@ class TreeGenerator(metaclass=SingletonMeta):
     def chaenomelessSinensis(self, planting_location):
         """
         Method to generate Chaenomeless Sinensis trees
+
         :param plantingLocation: (x, y) coordinates of the location where tree is planted
         :return: Tree object
         """
@@ -159,6 +170,7 @@ class TreeGenerator(metaclass=SingletonMeta):
     def chionanthusRetusus(self, planting_location):
         """
         Method to generate Chionanthus Retusus trees
+
         :param plantingLocation: (x, y) coordinates of the location where tree is planted
         :return: Tree object
         """
@@ -167,6 +179,7 @@ class TreeGenerator(metaclass=SingletonMeta):
     def cornusOfficinalis(self, planting_location):
         """
         Method to generate Cornus Officinalis trees
+
         :param plantingLocation: (x, y) coordinates of the location where tree is planted
         :return: Tree object
         """
@@ -175,6 +188,7 @@ class TreeGenerator(metaclass=SingletonMeta):
     def ginkgoBiloba(self, planting_location):
         """
         Method to generate Ginkgo Biloba trees
+
         :param plantingLocation: (x, y) coordinates of the location where tree is planted
         :return: Tree object
         """
@@ -183,6 +197,7 @@ class TreeGenerator(metaclass=SingletonMeta):
     def kobusMagnolia(self, planting_location):
         """
         Method to generate Kobus Magnolia trees
+
         :param plantingLocation: (x, y) coordinates of the location where tree is planted
         :return: Tree object
         """
@@ -191,6 +206,7 @@ class TreeGenerator(metaclass=SingletonMeta):
     def liriodendronTulipifera(self, planting_location):
         """
         Method to generate Liriodendron Tulipifera trees
+
         :param plantingLocation: (x, y) coordinates of the location where tree is planted
         :return: Tree object
         """
@@ -199,6 +215,7 @@ class TreeGenerator(metaclass=SingletonMeta):
     def oak(self, planting_location):
         """
         Method to generate Oak trees
+
         :param plantingLocation: (x, y) coordinates of the location where tree is planted
         :return: Tree object
         """
@@ -207,6 +224,7 @@ class TreeGenerator(metaclass=SingletonMeta):
     def persimmon(self, planting_location):
         """
         Method to generate Persimmon trees
+
         :param plantingLocation: (x, y) coordinates of the location where tree is planted
         :return: Tree object
         """
@@ -215,6 +233,7 @@ class TreeGenerator(metaclass=SingletonMeta):
     def prunusArmeniaca(self, planting_location):
         """
         Method to generate Prunus Armeniaca trees
+
         :param plantingLocation: (x, y) coordinates of the location where tree is planted
         :return: Tree object
         """
@@ -223,6 +242,7 @@ class TreeGenerator(metaclass=SingletonMeta):
     def prunusYedoensis(self, planting_location):
         """
         Method to generate Prunus Yedoensis trees
+
         :param plantingLocation: (x, y) coordinates of the location where tree is planted
         :return: Tree object
         """
@@ -231,6 +251,7 @@ class TreeGenerator(metaclass=SingletonMeta):
     def sophoraJaponica(self, planting_location):
         """
         Method to generate Sophora Japonica trees
+
         :param plantingLocation: (x, y) coordinates of the location where tree is planted
         :return: Tree object
         """
@@ -239,6 +260,7 @@ class TreeGenerator(metaclass=SingletonMeta):
     def zelkovaSerrata(self, planting_location):
         """
         Method to generate Zelkova Serrata trees
+
         :param plantingLocation: (x, y) coordinates of the location where tree is planted
         :return: Tree object
         """
@@ -247,6 +269,7 @@ class TreeGenerator(metaclass=SingletonMeta):
     def none(self, planting_location):
         """
         Method to generate trees
+
         :param plantingLocation: (x, y) coordinates of the location where tree is planted
         :return: Tree object
         """

@@ -1,10 +1,9 @@
 import random
-
 from Constraints.EdinburghConstraints import EdinburghConstraints
 from Constraints.ScenarioOneConstraints import ScenarioOneConstraints
 from Environment.Grid import Grid
 import numpy as np
-from deap import base, creator, tools, algorithms
+from deap import base, creator, tools
 import json
 import matplotlib.pyplot as plt
 from GeneticAlgorithm.GreedyInitGrid import GreedyInitGrid
@@ -14,8 +13,28 @@ from GeneticAlgorithm.AlgorithmMutations import AlgorithmMutations
 random.seed(100)
 
 class CustomGeneticChanges:
+    """
+    Class to override the default genetic algorithm methods in the deap library in favour of more applicable mate and mutate functions. Also
+    contains the methods to run the genetic algorithm for the Edinburgh scenario, scenario one, and scenario two. This populates the starting population
+    by calling the GreedyInitGrid class to generate chromosomes.
+
+    :param x (int): x dimension of the grid
+    :param y (int): y dimension of the grid
+    :param trees_types_dict (dict): of tree types
+    :param generator (TreeGenerator): TreeGenerator object to generate trees
+    :param scenario (int): scenario to run genetic algorithm for
+    """
 
     def __init__(self, x, y, trees_types_dict, generator, scenario):
+        """
+        Constructor for the CustomGeneticChanges class
+
+        :param x (int): x dimension of the grid
+        :param y (int): y dimension of the grid
+        :param trees_types_dict (dict): of tree types id to species
+        :param generator (TreeGenerator): TreeGenerator object to generate trees
+        :param scenario (int): scenario to run genetic algorithm for
+        """
         self.x = x
         self.y = y
         self.trees_types_dict = trees_types_dict
@@ -27,10 +46,18 @@ class CustomGeneticChanges:
         self.NUM_TREES = 16 #number of tree types for park scenario
 
         self.iterations = 0 #limit number of attempts to find valid starting grid to prevent reaching max recursion depth
-        self.previous_individual = None
+        self.previous_individual = None #init previous valid individual to None
 
 
     def mate(self, ind1, ind2):
+        """
+        Method to perform one-point crossover on two individuals. The offspring are created by taking the first half of the first individual and the second half of the second individual.
+        The offspring are then checked for plantability and if they are not plantable, they are not planted.
+
+        :param ind1 (Individual): first individual to crossover
+        :param ind2 (Individual): second individual to crossover
+        :return: offspring1, offspring2 (Individual): two offspring created from crossover
+        """
         ind1_grid_flat = ind1.grid.numerical_grid.flatten()
         ind2_grid_flat = ind2.grid.numerical_grid.flatten()
 
@@ -63,11 +90,18 @@ class CustomGeneticChanges:
                 if offspring2[i][j] > 0:
                     mutated_ind2.plant_tree(offspring2[i][j], j, i) #if not plantable will not plant
 
-
         #return offspring1, offspring2 as flattened arrays
         return ind1, ind2
 
     def mutate(self, individual, indpb):
+        """
+        Method to mutate an individual by overlaying a tree on a random position in the grid with a probability of indpb.
+
+        :param individual (Individual): chromosome to mutate
+        :param indpb (int): probability of mutation
+        :return: Individual mutated individual
+        """
+
         mutated = AlgorithmMutations(self.trees_types_dict, individual.grid)
         for i in range(individual.grid.y):
             for j in range(individual.grid.x):
@@ -79,12 +113,22 @@ class CustomGeneticChanges:
 
 
     def create_individual(self):
+        """
+        Method to create an individual with a grid of size x by y. This attaches the Grid object to the individual. This allows
+        the individual to update the grid with trees and check for constraints specific to that individual.\
+
+        :return: Individual with a grid of size x by y
+        """
         individual = creator.Individual()
         individual.grid = Grid(self.x, self.y, self.scenario)
         return individual
 
 
     def run_edinburgh_scenario(self):
+        """
+        Method to run the genetic algorithm for the Edinburgh scenario. This method initializes the genetic algorithm with the necessary parameters
+        and runs the algorithm for a set number of generations. The best individual found is saved as a json file and the average and best fitness
+        """
         cost = 50000
         fitness_eval = EdinburghConstraints(self.x, self.y, cost, self.trees_types_dict, self.generator)
 
@@ -142,6 +186,11 @@ class CustomGeneticChanges:
 
 
     def run_scenario_two(self):
+        """
+        Method to run the genetic algorithm for scenario two. This method initializes the genetic algorithm with the necessary parameters
+        and runs the algorithm for a set number of generations. The best individual found is saved as a json file and the average and best fitness
+        is plotted.
+        """
         fitness_eval = ScenarioTwoConstraints(self.x, self.y, self.COST_LIMIT, self.trees_types_dict, self.generator)
 
         toolbox = base.Toolbox()
@@ -193,6 +242,10 @@ class CustomGeneticChanges:
         self.plot_best_scores(best_scores)
 
     def plot_avg_scores(self, scores):
+        """
+        Method to plot the average fitness scores against the generation number
+        :param scores (list): list of fitness scores
+        """
         plt.plot(scores)
         plt.xlabel('Generation')
         plt.ylabel('Average Fitness')
@@ -202,6 +255,10 @@ class CustomGeneticChanges:
         plt.show()
 
     def plot_best_scores(self, scores):
+        """
+        Method to plot the fitness scores against the generation number
+        :param scores (list): list of fitness scores
+        """
         plt.plot(scores)
         plt.xlabel('Generation')
         plt.ylabel('Best Fitness')
@@ -210,15 +267,16 @@ class CustomGeneticChanges:
         plt.savefig('best_fitness_s1_500_50gen.png')
         plt.show()
 
-    def plot_grid(self, grid):
-        array = np.array(grid)
-        plt.figure(figsize=(30, 30))
-        plt.imshow(array, cmap='viridis', interpolation='nearest')
-        plt.colorbar(label='Tree Types')
-        plt.title('Planting Grid Visualization')
-        plt.show()
-
     def varAnd(self, population, toolbox, cxpb, mutpb):
+        """
+        Method to apply crossover and mutation to the population. The offspring are created by applying crossover to the population and then applying mutation to the offspring.
+        The offspring are then evaluated and the best individuals are selected to be the next generation. Each is applied at a xpb or mutpb probability.
+        :param population (list): list of individuals
+        :param toolbox: defined by deap library
+        :param cxpb (int): chance of applying crossover function
+        :param mutpb (int): chance of applying mutation function
+        :return: offspring (list): list of offspring
+        """
         offspring = [toolbox.clone(ind) for ind in population]
 
         # Apply crossover and mutation on the offspring
@@ -236,6 +294,11 @@ class CustomGeneticChanges:
 
 
     def run_scenario_one(self):
+        """
+        Method to run the genetic algorithm for scenario one. This method initializes the genetic algorithm with the necessary parameters
+        and runs the algorithm for a set number of generations. The best individual found is saved as a json file and the average and best fitness
+        is plotted.
+        """
         fitness_eval = ScenarioOneConstraints(self.x, self.y, self.co2_threshold, self.trees_types_dict, self.generator)
 
         toolbox = base.Toolbox()
@@ -287,17 +350,30 @@ class CustomGeneticChanges:
 
 
     def get_tree_generator(self, start_grid):
+        """
+        Method to return a predefined tree generator for the genetic algorithm. This is used to generate the starting population for the genetic algorithm.
+        :param start_grid (Individual): individual to use as the starting grid
+        :return: Individual
+        """
         def predefined_tree():
             return [tree for tree in start_grid]
         return predefined_tree
 
     def init_individual_scenario_two(self, fitness_eval):
+        """
+        Method to initialize the starting population for scenario two. This method uses the GreedyInitGrid class to generate a starting grid for the genetic algorithm.
+        Continually runs until the population is completely populated. If a start_ind is invalid, the function calls itself again recursively. A max depth of 650 is set to prevent
+        reaching the maximum recursion depth. If the max depth is reached, the previous individual is returned.
+
+        :param fitness_eval (ScenarioTwoConstraints): fitness evaluation object for scenario two
+        :return: Individual
+        """
         #init start grid and validate that the grid abides constraints
         self.iterations+=1
         print("Iteration: " + str(self.iterations))
         init_individual = self.create_individual()
-        mutations = AlgorithmMutations(self.trees_types_dict, init_individual.grid)
-        greedy_alg = GreedyInitGrid(self.x, self.y, init_individual, self.trees_types_dict, self.generator, fitness_eval, mutations)
+        mutations = AlgorithmMutations(self.trees_types_dict, init_individual.grid) #init mutations object
+        greedy_alg = GreedyInitGrid(self.x, self.y, init_individual, self.trees_types_dict, self.generator, fitness_eval, mutations) #init greedy algorithm
         start_ind = greedy_alg.init_grid_scenario_two()
         if self.iterations > 650:
             self.iterations = 0
@@ -309,11 +385,18 @@ class CustomGeneticChanges:
         return start_ind
 
     def init_individual_scenario_one(self, fitness_eval):
+        """
+        Method to initialize the starting population for scenario one. This method uses the GreedyInitGrid class to generate a starting grid for the genetic algorithm.
+        Continually runs until the population is completely populated. If a start_ind is invalid, the function calls itself again recursively. A max depth of 650 is set to prevent
+        reaching the maximum recursion depth. If the max depth is reached, the previous individual is returned.
+        :param fitness_eval (ScenarioOneConstraints): fitness evaluation object for scenario one
+        :return: Individual
+        """
         self.iterations+=1
         print("Iteration: " + str(self.iterations))
         init_individual = self.create_individual()
-        mutations = AlgorithmMutations(self.trees_types_dict, init_individual.grid)
-        greedy_alg = GreedyInitGrid(self.x, self.y, init_individual, self.trees_types_dict, self.generator, fitness_eval, mutations)
+        mutations = AlgorithmMutations(self.trees_types_dict, init_individual.grid) #init mutations object
+        greedy_alg = GreedyInitGrid(self.x, self.y, init_individual, self.trees_types_dict, self.generator, fitness_eval, mutations) #init greedy algorithm
         start_ind = greedy_alg.init_grid_scenario_one()
         if self.iterations > 650:
             self.iterations = 0
@@ -325,11 +408,19 @@ class CustomGeneticChanges:
         return start_ind
 
     def init_individual_edinburgh(self, fitness_eval):
+        """
+        Method to initialize the starting population for Edinburgh scenario. This method uses the GreedyInitGrid class to generate a starting grid for the genetic algorithm.
+        Continually runs until the population is completely populated. If a start_ind is invalid, the function calls itself again recursively. A max depth of 650 is set to prevent
+        reaching the maximum recursion depth. If the max depth is reached, the previous individual is returned.
+
+        :param fitness_eval (EdinburghConstraints): fitness evaluation object for Edinburgh scenario
+        :return: Individual
+        """
         self.iterations+=1
         print("Iteration: " + str(self.iterations))
         init_individual = self.create_individual()
-        mutations = AlgorithmMutations(self.trees_types_dict, init_individual.grid)
-        greedy_alg = GreedyInitGrid(self.x, self.y, init_individual, self.trees_types_dict, self.generator, fitness_eval, mutations)
+        mutations = AlgorithmMutations(self.trees_types_dict, init_individual.grid) #init mutations object
+        greedy_alg = GreedyInitGrid(self.x, self.y, init_individual, self.trees_types_dict, self.generator, fitness_eval, mutations) #init greedy algorithm
         start_ind = greedy_alg.init_grid_edinburgh()
         if self.iterations > 650:
             self.iterations = 0
