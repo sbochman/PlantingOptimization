@@ -113,9 +113,8 @@ class ScenarioTwoConstraints:
             return -100,
         #############Hedge Planting################
         if total_crown_hedge < 360: #meter length of hedge zone
-            print("total_crown_hedge")
+            print("hedge_planting")
             return -100,
-
         ################COST CONSTRAINTS################
         if total_cost > self.cost_limit:
             print("total_cost")

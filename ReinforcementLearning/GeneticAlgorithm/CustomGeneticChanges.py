@@ -72,7 +72,8 @@ class CustomGeneticChanges:
         for i in range(individual.grid.y):
             for j in range(individual.grid.x):
                 if random.random() < indpb:
-                    tree_type = random.choice([1,5,6,7,8,9,11,12,13,14,15,16,17,18,20,21])
+                    #tree_type = random.choice([1,5,6,7,8,9,11,12,13,14,15,16,17,18,20,21])  #this line is for scenario 3 (edinburgh park)
+                    tree_type = random.choice([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21]) #this line is for scenario 1 and 2
                     mutated.overlay_tree(tree_type, j, i)
         return individual
 
@@ -151,14 +152,15 @@ class CustomGeneticChanges:
         toolbox.register("population", tools.initRepeat, list, lambda: self.init_individual_scenario_two(fitness_eval))
         toolbox.register("evaluate", fitness_eval.evaluate)
         toolbox.register("mate", self.mate)
-        toolbox.register("mutate", self.mutate, low=0, up=self.NUM_TREES, indpb=0.05)
+        toolbox.register("mutate", self.mutate, indpb=0.05)
         toolbox.register("select", tools.selTournament, tournsize=3)
 
         # Generate the initial population and run the genetic algorithm:
-        population = toolbox.population(n=500)
+        population_size = 250
+        population = toolbox.population(n=population_size)
         avg_scores = []
         best_scores = []
-        NGEN = 1
+        NGEN = 100
         for gen in range(NGEN):
             print("Generation: ", gen)
             offspring = self.varAnd(population, toolbox, cxpb=0.5, mutpb=0.2)
@@ -172,7 +174,7 @@ class CustomGeneticChanges:
             print("Best so far: ", best_so_far)
 
             #append top score to best_scores
-            avg_scores.append(curr_avg / 500)
+            avg_scores.append(curr_avg / population_size)
             best_scores.append(best_so_far)
             population = toolbox.select(offspring, k=len(population))
 
@@ -182,7 +184,7 @@ class CustomGeneticChanges:
         fitness_eval.validate(best_ind.grid.numerical_grid.flatten())
 
         #save the best_grid list as a json file
-        with open("best_grid.json", "w") as f:
+        with open("best_grid_s2_500.json", "w") as f:
             json.dump(best_ind.grid.numerical_grid.tolist(), f)
 
         #plot avg_scores
@@ -196,7 +198,7 @@ class CustomGeneticChanges:
         plt.ylabel('Average Fitness')
         plt.title('Average Fitness vs Generation')
         #save as img
-        plt.savefig('average_fitness_s3_500.png')
+        plt.savefig('average_fitness_s1_500_50gen.png')
         plt.show()
 
     def plot_best_scores(self, scores):
@@ -205,7 +207,7 @@ class CustomGeneticChanges:
         plt.ylabel('Best Fitness')
         plt.title('Best Fitness vs Generation')
         #save as img
-        plt.savefig('best_fitness_s3_500.png')
+        plt.savefig('best_fitness_s1_500_50gen.png')
         plt.show()
 
     def plot_grid(self, grid):
@@ -240,10 +242,10 @@ class CustomGeneticChanges:
         creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
         creator.create("Individual", list, fitness=creator.FitnessMin, grid=None)
         toolbox.register("individual", tools.initIterate, creator.Individual, self.init_individual_scenario_one(fitness_eval))
-        toolbox.register("population", tools.initRepeat, list, self.init_individual_scenario_one(fitness_eval))
+        toolbox.register("population", tools.initRepeat, list, lambda: self.init_individual_scenario_one(fitness_eval))
         toolbox.register("evaluate", fitness_eval.evaluate)
         toolbox.register("mate", self.mate)
-        toolbox.register("mutate", self.mutate, low=0, up=self.NUM_TREES, indpb=0.05)
+        toolbox.register("mutate", self.mutate, indpb=0.05)
         toolbox.register("select", tools.selTournament, tournsize=3)
 
         # Generate the initial population and run the genetic algorithm:
@@ -257,11 +259,11 @@ class CustomGeneticChanges:
             offspring = self.varAnd(population, toolbox, cxpb=0.5, mutpb=0.2)
             fits = toolbox.map(toolbox.evaluate, offspring)
             curr_avg = 0
-            best_so_far = 0
+            best_so_far = float('inf')
             for fit, ind in zip(fits, offspring):
                 ind.fitness.values = fit
                 curr_avg += ind.fitness.values[0]
-                best_so_far = max(best_so_far, ind.fitness.values[0])
+                best_so_far = min(best_so_far, ind.fitness.values[0])
             print("Best so far: ", best_so_far)
 
             #append top score to best_scores
@@ -275,7 +277,7 @@ class CustomGeneticChanges:
         fitness_eval.validate(best_ind.grid.numerical_grid.flatten())
 
         #save the best_grid list as a json file
-        with open("best_grid_scenario_one_500.json", "w") as f:
+        with open("best_grid_scenario_one_500_50gen.json", "w") as f:
             json.dump(best_ind.grid.numerical_grid.tolist(), f)
 
         #plot avg_scores

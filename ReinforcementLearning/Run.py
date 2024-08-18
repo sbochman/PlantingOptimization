@@ -58,8 +58,8 @@ y = 514
 COST_LIMIT = 60000
 NUM_TREES = 16
 
-custom_genetic = CustomGeneticChanges(x, y, tree_types_dict, generator, 2)
-custom_genetic.run_scenario_two()
+custom_genetic = CustomGeneticChanges(x, y, tree_types_dict, generator, 1)
+custom_genetic.run_scenario_one()
 
 
 import matplotlib.pyplot as plt

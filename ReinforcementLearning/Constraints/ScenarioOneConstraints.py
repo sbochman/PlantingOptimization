@@ -77,49 +77,49 @@ class ScenarioOneConstraints:
         #################TREE RATIO CONSTRAINTS################
         if total_quantity_credit_evergreen + total_quantity_credit_deciduous < min_trees_to_landscape:
             print("total_quantity_credit_evergreen")
-            return float('inf'),
+            return 999999,
         elif total_quantity_credit_evergreen < min_evergreen_to_all:
             print("total_quantity_credit_evergreen")
-            return float('inf'),
+            return 999999,
         elif total_quantity_credit_native < min_native_to_all:
             print("total_quantity_credit_native")
-            return float('inf'),
+            return 999999,
         elif total_large_trees < min_large_to_all:
             print("total_large_trees")
-            return float('inf'),
+            return 999999,
 
         ################CANOPY COVERAGE CONSTRAINTS############
         if total_crown_area > max_canopy_coverage:
             print("total_crown_area above")
-            return float('inf'),
+            return 999999,
         elif total_crown_area < min_canopy_coverage:
             print("total_crown_area below")
-            return float('inf'),
+            return 999999,
 
         ################TREE COUNT CONSTRAINTS################
         if total_evergreen_trees < min_evergreen_count:
             print("total_evergreen_trees")
-            return float('inf'),
+            return 999999,
         elif total_deciduous_trees < min_deciduous_count:
             print("total_deciduous_trees")
-            return float('inf'),
+            return 999999,
         ############ROAD SIDE PLANTING################
         if num_native_road * (total_native_road_interval / num_native_road) < 148: #meter length of road. keep 10 meter interval between. seems as though paper used 10 meters given 20 native trees planted
             print("Not enough trees planted by road " + str(num_native_road * 2) + " < " + str(148))
-            return float('inf'),
+            return 999999,
         ############PEDESTRIAN ROAD PLANTING################
         if num_trees_pedestrian * (total_pedestrian_road_interval / num_trees_pedestrian) < 186: #meter length of pedestrian road. multiple by 4 since the interva is set to 8 blocks (4 meters)
             print("Not enough trees planted by pedestrian road " + str(num_trees_pedestrian * 2) + " < " + str(186))
-            return float('inf'),
+            return 999999,
         #############Hedge Planting################
         if total_crown_hedge < 360: #meter length of hedge zone
             print("total_crown_hedge")
-            return float('inf'),
+            return 999999,
 
         ################CO2 CONSTRAINT################
         if total_co2 < self.co2_threshold:
             print("total_cost")
-            return float('inf'),
+            return 999999,
         return total_cost,
 
     def validate(self, individual):
