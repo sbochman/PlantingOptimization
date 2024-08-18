@@ -23,6 +23,8 @@ class GreedyInitGrid:
                             "min_canopy_coverage": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
                             "min_evergreen_count": [1, 2, 3, 4, 5, 6],
                             "min_deciduous_count": [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
+                            "pedestrian_road_planting": [1, 2, 3, 4, 5, 6, 7, 21],
+                            "hedge_planting": [1, 6],
                             "total_cost": [0]
                            }
         self.areas =  {"hedge": [1, 6],
@@ -34,6 +36,7 @@ class GreedyInitGrid:
         self.violations_park = {"min_trees_to_landscape": [1, 7, 20, 21],
                                 "min_evergreen_to_all": [1, 5, 6],
                                 "min_large_to_all": [7, 21],
+                                "min_native_to_all": [13, 20],
                                 "max_canopy_coverage": [0],
                                 "min_canopy_coverage": [1, 5, 6, 7, 8, 9, 11, 13, 14, 15, 16, 17, 18,  20, 21],
                                 "min_evergreen_count": [1, 2, 3, 4, 5, 6],
@@ -50,26 +53,36 @@ class GreedyInitGrid:
         for i in range(self.y):
             for j in range(self.x):
                 if self.individual.grid.grid[i][j].hedge:
-                    chance = random.randint(1, 10)
-                    if chance < 3:
+                    chance = random.randint(1, 25)
+                    if i < 350 and chance < 3:
+                        tree_type = random.choice(self.areas["hedge"])
+                        self.mutations.plant_tree(tree_type, j, i)
+                    elif i > 350:
                         tree_type = random.choice(self.areas["hedge"])
                         self.mutations.plant_tree(tree_type, j, i)
 
-
-        #populate road areas with trees. set interval to 4 meters - meaning set additional 8 blocks up, down, left, right to be unplantable
+        #populate road areas with trees. set interval to 2 meters - meaning set additional 4 blocks up, down, left, right to be unplantable
         for i in range(self.y):
             for j in range(self.x):
                 if self.individual.grid.grid[i][j].pedestrian_road:
-                    tree_type = random.choice(self.areas["plantable"])
-                    self.mutations.plant_tree(tree_type, j, i)
-                    #set additional 8 blocks up, down, left, right to be unplantable
-                    min_i = max(0, i - 8)
-                    max_i = min(self.y, i + 8)
-                    min_j = max(0, j - 8)
-                    max_j = min(self.x, j + 8)
-                    for k in range(min_i, max_i):
-                        for l in range(min_j, max_j):
-                            self.individual.grid.grid[k][l].plantable = False
+                    chance = random.randint(1, 10)
+                    if i < 322 and chance < 4:
+                        tree_type = random.choice(self.areas["plantable"])
+                        self.mutations.plant_tree(tree_type, j, i)
+                    else:
+                        tree_type = random.choice(self.areas["plantable"])
+                        self.mutations.plant_tree(tree_type, j, i)
+
+
+        #populate road areas with trees. set interval to 2 meters - meaning set additional 4 blocks up, down, left, right to be unplantable
+        for i in range(self.y):
+            for j in range(self.x):
+                if self.individual.grid.grid[i][j].road:
+                    #tree should flip back and forth between tree 13 and 20 to plant for aesthetic purposes
+                    chance = random.randint(1, 25)
+                    if chance < 3:
+                        tree_type = self.areas["native"][i % 2]
+                        self.mutations.plant_tree(tree_type, j, i)
 
         #populate big tree areas with large trees
         for i in range(self.y):
@@ -78,14 +91,23 @@ class GreedyInitGrid:
                 if chance < 2:
                     if self.individual.grid.grid[i][j].big_tree_area:
                         #random chance to plant a tree in big tree area
-                        chance = random.choice([1, 2, 3, 4, 5])
+                        chance = random.choice([1, 2, 3, 4, 5, 6, 7])
                         if chance < 3: continue #random chance to not plant tree
                         tree_type = random.choice(self.areas["big_tree_area"])
                         self.mutations.plant_tree(tree_type, j, i)
 
         for i in range(self.y):
             for j in range(self.x):
-                chance = random.randint(1, 50)
+                if self.individual.grid.grid[i][j].pedestrian_road:
+                    constraint = self.constraints.validate(self.individual.grid.numerical_grid.flatten())
+                    if constraint == None: return self.individual #all constraints are met return and use initial grid for genetic algorithm
+                    if constraint == "pedestrian_road_planting":
+                        tree_type = random.choice([1, 2, 3, 4, 5, 6, 7, 21])
+                        self.mutations.plant_tree(tree_type, j, i)
+                    else:
+                        tree_type = random.choice(self.violations_apartment[constraint])
+                        self.mutations.plant_tree(tree_type, j, i)
+                chance = random.randint(1, 40)
                 if chance < 2:
                     #check fitness_eval to see what constraint is being violated
                     if self.individual.grid.grid[i][j].plantable:
@@ -158,7 +180,7 @@ class GreedyInitGrid:
                         tree_type = random.choice([1, 2, 3, 4, 5, 6, 7, 21])
                         self.mutations.plant_tree(tree_type, j, i)
                     else:
-                        tree_type = random.choice(self.violations_park[constraint])
+                        tree_type = random.choice(self.violations_apartment[constraint])
                         self.mutations.plant_tree(tree_type, j, i)
                 chance = random.randint(1, 40)
                 if chance < 2:

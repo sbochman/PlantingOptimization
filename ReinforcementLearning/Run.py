@@ -58,6 +58,9 @@ y = 514
 COST_LIMIT = 60000
 NUM_TREES = 16
 
+
+custom_genetic = CustomGeneticChanges(x, y, tree_types_dict, generator, 1)
+custom_genetic.run_scenario_one()
 #custom_genetic = CustomGeneticChanges(x, y, tree_types_dict, generator, 2)
 #custom_genetic.run_scenario_two()
 
@@ -88,13 +91,13 @@ for i in range(y):
 
 #print the grid. a different color for each plantable region.
 #0 is unplantable, 1 is plantable, 2 is hedge, 3 is large tree area, 4 is road, 5 is pedestrian road
-cmap = ListedColormap(['white', 'blue', 'purple', 'red', 'green', 'orange'])
-bounds = [-0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5]
-norm = BoundaryNorm(bounds, cmap.N)
-plt.figure(figsize=(9, 9))
-plt.imshow(numerical_grid, cmap=cmap, norm=norm, aspect='equal')
-plt.grid(True, which='both', color='black', linestyle='-', linewidth=2)
-plt.show()
+#cmap = ListedColormap(['white', 'blue', 'purple', 'red', 'green', 'orange'])
+#bounds = [-0.5, 0.5, 1.5, 2.5, 3.5, 4.5, 5.5]
+#norm = BoundaryNorm(bounds, cmap.N)
+#plt.figure(figsize=(9, 9))
+#plt.imshow(numerical_grid, cmap=cmap, norm=norm, aspect='equal')
+#plt.grid(True, which='both', color='black', linestyle='-', linewidth=2)
+#plt.show()
 
 
 
