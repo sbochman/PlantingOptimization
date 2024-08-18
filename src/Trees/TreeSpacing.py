@@ -4,11 +4,34 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 
 class TreeSpacing:
+    """
+    This class is used to confirm the tree spacing requirements for each tree type. Each tree has a different radius.
+    This class ensures that the radius is respected when trying to plant another tree. It can also remove trees. All changes
+    are logged in the Grid object.
+
+    Attributes:
+        tree_types_dict (dict): a dictionary with keys as the tree number and values as the tree
+    """
 
     def __init__(self, tree_types_dict):
+        """
+        Constructor for TreeSpacing class
+
+        :param tree_types_dict (dict): a dictionary with keys as the tree number and values as the tree
+        """
         self.tree_types_dict = tree_types_dict
 
     def update_coords(self, fill_cords, grid, numerical_representation, center, env):
+        """
+        This function updates the grid with the new tree. It checks if the tree can be planted in the given location.
+
+        :param fill_cords (list): a list of coordinates that are occupied by the tree
+        :param grid (numpy array): the grid that is being updated. the numerical representation
+        :param numerical_representation (numpy array): the numerical representation of the tree
+        :param center (int, int): the center of the tree (x, y) coordinates
+        :param env (Grid object): the grid object that is being updated
+        :return: numpy array grid, boolean plantable
+        """
         plantable = True
         for coord in fill_cords:
             y, x = coord
@@ -18,14 +41,20 @@ class TreeSpacing:
         if plantable:
             for coord in fill_cords:
                 y, x = coord
-                #print(coord)
                 grid[y][x] = numerical_representation #change grid of surrounding tree radius to negative (occupied)
-                #print("grid at: " + str(y) + " " + str(x) + " " + str(grid[y][x]))
             x, y = center
             grid[y][x] = abs(numerical_representation) #change base of tree to its positive representation
         return grid, plantable
 
     def remove_tree(self, fill_cords, grid, env):
+        """
+        This function removes a tree from the grid. It updates the grid and the environment object.
+
+        :param fill_cords (list): a list of coordinates that are occupied by the tree
+        :param grid (numpy array): the grid that is being updated. the numerical representation
+        :param env (Grid object): the grid object that is being updated
+        :return: grid (numpy array)
+        """
         for coord in fill_cords:
             y, x = coord
             grid[y][x] = 0
@@ -34,6 +63,10 @@ class TreeSpacing:
         return grid
 
     def generate_tree_radius_png(self):
+        """
+        This function generates a png for each tree type. The png shows the tree radius for each tree.
+        """
+
         #loop through all trees, create a grid for each tree, and save the grid as a png
         for i in range(1, 22):
             #crate tree

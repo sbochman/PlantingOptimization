@@ -1,8 +1,25 @@
-import numpy as np
 from Environment.Grid import Grid
 class ScenarioOneConstraints:
+    """
+    ScenarioOneConstraints class is used to evaluate the fitness of an individual in the first scenario. The first scenario here minimises cost
+    of the apartment complex while ensuring that the CO2 absorption of the trees planted is greater than a certain threshold.
 
+    Attributes:
+        grid_width (int): The width of the grid
+        grid_height (int): The height of the grid
+        co2_threshold (int): The threshold of CO2 absorption that the trees planted must exceed
+        tree_types_dict (dict): A dictionary containing the tree types and their respective values
+        generator (TreeGenerator): A TreeGenerator object that is used to generate trees
+    """
     def __init__(self, grid_width, grid_height, co2_threshold, tree_types_dict, generator):
+        """
+        Constructor for the ScenarioOneConstraints class
+        :param grid_width: grid width
+        :param grid_height: grid height
+        :param co2_threshold: co2 threshold, which is set to 3500 kg/year in the paper
+        :param tree_types_dict: dictionary containing tree types id and their respective species
+        :param generator: TreeGenerator object to generate trees
+        """
         self.GRID_WIDTH = grid_width
         self.GRID_HEIGHT = grid_height
         self.co2_threshold = co2_threshold
@@ -11,11 +28,22 @@ class ScenarioOneConstraints:
         self.planting_areas = Grid(grid_width, grid_height, 1)
 
     def evaluate(self, individual):
+        """
+        Evaluate the fitness of an individual. The fitness is calculated based on the cost of the trees planted.
+        If the individual does not meet the constraints, the fitness is set to 999999.
+
+        :param individual: chromosome to evaluate
+        :return: integer fitness value
+        """
+
+        #keep track of cost and co2
         total_cost = 0
         total_co2 = 0
+        #flatten the grid
         individual = individual.grid.numerical_grid.flatten()
         grid = [individual[i:i+ self.GRID_WIDTH] for i in range(0, len(individual), self.GRID_WIDTH)]
 
+        #keep track of tree statistics
         total_quantity_credit_evergreen = 0
         total_quantity_credit_deciduous = 0
         total_quantity_credit_native = 0
@@ -31,6 +59,7 @@ class ScenarioOneConstraints:
         total_native_road_interval = 0
         total_pedestrian_road_interval = 0
 
+        #iterate through the grid and increment the statistics
         for y, row in enumerate(grid):
             for x, cell in enumerate(row):
                 if cell > 0:
@@ -63,6 +92,8 @@ class ScenarioOneConstraints:
                     total_trees += 1
                     total_crown_area += tree.getCrownArea()
 
+
+        #constraints as indicated in the paper
         #############################
         min_trees_to_landscape = 0.2 * (7326) #7326 meters squared is plantable area of apartment complex
         min_evergreen_to_all = 0.2 * (total_quantity_credit_evergreen + total_quantity_credit_deciduous)
@@ -123,10 +154,21 @@ class ScenarioOneConstraints:
         return total_cost,
 
     def validate(self, individual):
+        """
+        Validate the individual based on the constraints. If the individual does not meet the constraints, print the constraint that is violated.
+        Otherwise, print "VALID". This is used in the greedy algorithm to determine what constraint is currently being violated.
+
+        :param individual: chromosome to validate
+        :return: string indicating the constraint that is violated or "VALID" if valid
+        """
+
+        #keep track of cost and co2
         total_cost = 0
         total_co2 = 0
+        #flatten the grid
         grid = [individual[i:i+ self.GRID_WIDTH] for i in range(0, len(individual), self.GRID_WIDTH)]
 
+        #track tree statistics
         total_quantity_credit_evergreen = 0
         total_quantity_credit_deciduous = 0
         total_quantity_credit_native = 0
@@ -142,6 +184,7 @@ class ScenarioOneConstraints:
         total_native_road_interval = 0
         total_pedestrian_road_interval = 0
 
+        #iterate through the grid and increment the statistics
         for y, row in enumerate(grid):
             for x, cell in enumerate(row):
                 if cell > 0:
@@ -174,6 +217,7 @@ class ScenarioOneConstraints:
                     total_trees += 1
                     total_crown_area += tree.getCrownArea()
 
+        #constraints as indicated in the paper
         #############################
         min_trees_to_landscape = 0.2 * (7326)
         min_evergreen_to_all = 0.2 * (total_quantity_credit_evergreen + total_quantity_credit_deciduous)
@@ -186,7 +230,6 @@ class ScenarioOneConstraints:
         #############################
 
         #############TREE RATIO CONSTRAINTS################
-
         if total_quantity_credit_evergreen < min_evergreen_to_all:
             #print("Not enough evergreen trees to all trees " + str(total_quantity_credit_evergreen) + " < " +  str(min_evergreen_to_all))
             return "min_evergreen_to_all"
@@ -229,8 +272,6 @@ class ScenarioOneConstraints:
         if total_co2 < self.co2_threshold:
             #print("Cost exceeds " + str(total_cost))
             return "total_cost"
-
-
 
         #############VALID################
         print("VALID --- STATISTICS")

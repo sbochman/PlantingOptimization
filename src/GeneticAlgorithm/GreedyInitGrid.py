@@ -1,13 +1,31 @@
 import random
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.colors import ListedColormap
-
 random.seed(100)
 
 class GreedyInitGrid:
+    """
+    GreedyInitGrid class is responsible for initializing the grid with trees in a greedy manner. The class is used to populate the intial population of the genetic algorithm.
 
+    Attributes:
+        x (int): x-coordinate of the grid
+        y (int): y-coordinate of the grid
+        individual (Individual): individual object to be populated
+        tree_types_dict (dict): dictionary of tree type ID and species
+        generator (TreeGenerator): tree generator object to generate trees
+        fitness_eval (Constraint): fitness evaluation object
+        mutations (AlgorithmMutations): mutations object
+    """
     def __init__(self, x, y, individual, tree_types_dict, generator, fitness_eval, mutations):
+        """
+        Constructor for the GreedyInitGrid class.
+
+        :param x (int): x-coordinate of the grid
+        :param y (int): y-coordinate of the grid
+        :param individual (Individual): individual object to be populated
+        :param tree_types_dict (dict): dictionary of tree type ID and species
+        :param generator (TreeGenerator): tree generator object to generate trees
+        :param fitness_eval (Constraint): fitness evaluation object
+        :param mutations (AlgorithmMutations): mutations object
+        """
         self.x = x
         self.y = y
         self.individual = individual
@@ -15,6 +33,7 @@ class GreedyInitGrid:
         self.generator = generator
         self.constraints = fitness_eval
         self.mutations = mutations
+        #define trees to plant given constraint violated. These trees help to satisfy the constraint.
         self.violations_apartment =  {"min_trees_to_landscape": [1, 4, 6, 7, 21],
                             "min_evergreen_to_all": [1, 2, 3, 4, 5, 6],
                             "min_native_to_all": [13, 20],
@@ -45,9 +64,13 @@ class GreedyInitGrid:
                                 "too_many_trees": [0]
                                 }
 
-
-
     def init_grid_scenario_one(self):
+        """
+        Method to initialize the grid with trees for scenario one. This is a greedy algorithm that populates the grid with trees based on the constraints violated.
+        If a constraint is violated, the algorithm will plant trees that help to satisfy the constraint.
+
+        :return (Individual): individual object with populated grid
+        """
         #must populate hedge with screening trees, so plant trees in hedge areas first
 
         for i in range(self.y):
@@ -123,6 +146,12 @@ class GreedyInitGrid:
 
 
     def init_grid_scenario_two(self):
+        """
+        Method to initialize the grid with trees for scenario two. This is a greedy algorithm that populates the grid with trees based on the constraints violated.
+        If a constraint is violated, the algorithm will plant trees that help to satisfy the constraint.
+
+        :return: Individual object with populated grid
+        """
         #must populate hedge with screening trees, so plant trees in hedge areas first
 
         for i in range(self.y):
@@ -197,6 +226,12 @@ class GreedyInitGrid:
         return None #not satisfied with constraints, try again
 
     def init_grid_edinburgh(self):
+        """
+        Method to initialize the grid with trees for scenario three. This is a greedy algorithm that populates the grid with trees based on the constraints violated.
+        If a constraint is violated, the algorithm will plant trees that help to satisfy the constraint.
+
+        :return: Individual object with populated grid
+        """
         for i in range(self.y):
             for j in range(self.x):
                 #random chance to plot a tree
@@ -208,18 +243,11 @@ class GreedyInitGrid:
                         flatten_grid = self.individual.grid.numerical_grid.flatten()
                         constraint = self.constraints.validate(flatten_grid)
                         if constraint == None:
-                            #array = np.array(self.individual.grid.numerical_grid)
-                            #plt.figure(figsize=(30, 30))
-                            #plt.imshow(array, cmap='viridis', interpolation='nearest')
-                            #plt.colorbar(label='Tree Types')
-                            #plt.title('Planting Grid Visualization')
-                            #plt.show()
                             return self.individual #all constraints are met return and use initial grid for genetic algorithm
                         tree_type = random.choice(self.violations_park[constraint])
                         self.mutations.plant_tree(tree_type, j, i)
                     else:
                         pass
-        #print(constraint)
         return None #not satisfied with constraints, try again
 
 

@@ -8,7 +8,21 @@ from matplotlib.colors import ListedColormap, BoundaryNorm
 random.seed(100)
 
 class AlgorithmMutations:
+    """
+    Class to handle the mutations of the genetic algorithm. This class will handle verifying planting is possible,
+    swapping trees and planting trees.
+
+    :param tree_types_dict (dict): dictionary of tree type id and species
+    :param env (Grid object): environment object
+    """
+
     def __init__(self, tree_types_dict, env):
+        """
+        Constructor for the AlgorithmMutations class
+
+        :param tree_types_dict (dict): dictionary of tree type id and species
+        :param env (Grid object): environment object
+        """
         self.tree_types_dict = tree_types_dict
         self.env = env
         self.spacing = TreeSpacing(self.tree_types_dict)
@@ -16,6 +30,14 @@ class AlgorithmMutations:
 
 
     def snap_to_center(self, x, y):
+        """
+        Method to snap the x, y coordinates to the center of the tree. If spot is occupied by tree, this snaps to the cell
+        that is occupied by the center of the tree.
+
+        :param x (int): x coordinate
+        :param y (int): y coordinate
+        :return: cpprdinates of the center of the tree
+        """
         if self.env.grid[y][x].tree:
             return self.env.grid[y][x].tree.getPlantingLocation()
         else:
@@ -23,17 +45,20 @@ class AlgorithmMutations:
 
 
     def plant_tree(self, tree_type, x, y):
-        #if trying to plant on hedge zone or big tree area, ensure tree_type is acceptable
+        """
+        Method to plant a tree at a given x, y coordinate. Checks if tree can be planted at the location, and if not, does a local search to plant.
+        If both fail, the tree is not planted.
 
-        #if self.env.grid[y, x].hedge and tree_type not in [1, 6]:
-         #   tree_type = random.choice([1, 6])
-        #elif self.env.grid[y, x].big_tree_area and tree_type not in [2, 3, 7, 21]:
-        #    tree_type = random.choice([2, 3, 7, 21])
+        :param tree_type (int): tree id of the tree to plant
+        :param x (int): x coordinate
+        :param y (int): y coordinate
+        :return: boolean if tree is plantable
+        """
 
-        tree = self.generator.generateTree(self.tree_types_dict[tree_type], (x, y))
-        occupied_spots, numerical_representation = tree.returnOccupiedSpots()
+        tree = self.generator.generateTree(self.tree_types_dict[tree_type], (x, y)) #generate tree object
+        occupied_spots, numerical_representation = tree.returnOccupiedSpots() #return occupied spots of coordinates
         numerical_grid_copy = copy.deepcopy(self.env.numerical_grid)
-        numerical_grid_copy, plantable = self.spacing.update_coords(occupied_spots, numerical_grid_copy, numerical_representation, (x, y), self.env)
+        numerical_grid_copy, plantable = self.spacing.update_coords(occupied_spots, numerical_grid_copy, numerical_representation, (x, y), self.env) #update grid with new tree
         self.env.numerical_grid = numerical_grid_copy
 
         #if not plantable, search localized grid to place tree in a plantable area
@@ -43,19 +68,16 @@ class AlgorithmMutations:
             for spot in occupied_spots: #update the grid with the new tree object if plantable
                 y, x = spot
                 self.env.plant(x, y, tree)
-            #if self.env.grid[y][x].pedestrian_road:
-                #set additional 8 blocks up, down, left, right to be unplantable
-               # min_i = max(0, y - 8)
-               # max_i = min(self.env.y, y + 8)
-               # min_j = max(0, x - 8)
-               #max_j = min(self.env.x, x + 8)
-                #for k in range(min_i, max_i):
-               #     for l in range(min_j, max_j):
-               #         self.env.grid[k][l].plantable = False
         return plantable
-            #print('planting tree at: ' + str(x) + ', ' + str(y) + ' with type: ' + str(tree_type))
 
     def overlay_tree(self, tree_type, x, y):
+        """
+        Method to overlay a tree on top of another tree. If the new tree does not fit, the old tree is reverted back to its original position.
+
+        :param tree_type (int): tree id of the tree to plant
+        :param x (int): x coordinate
+        :param y (int): y coordinate
+        """
         #find old tree object in position
         old_x, old_y = self.snap_to_center(x, y)
         if old_x is not None: #if there is a tree in position
@@ -76,6 +98,15 @@ class AlgorithmMutations:
             self.plant_tree(tree_type, x, y)
 
     def swap_trees(self, x1, y1, x2, y2):
+        """
+        Method to swap two trees in the environment. If one of the spots is empty, the tree is moved to the empty spot.
+        If both spots are empty, nothing happens.
+
+        :param x1 (int): x coordinate of first tree
+        :param y1 (int): y coordinate of first tree
+        :param x2 (int): x coordinate of second tree
+        :param y2 (int): y coordinate of second tree
+        """
         #if x1, y1 and x2, y2 is a tree, save the tree object
         tree1 = self.env.grid[y1][x1].tree
         tree2 = self.env.grid[y2][x2].tree
@@ -112,6 +143,16 @@ class AlgorithmMutations:
 
 
     def local_search(self, tree_type, curr_x, curr_y):
+        """
+        Method to search in a 5x5 grid around the current position to find a plantable area. If found, plant the tree. Otherwise,
+        no tree is planted.
+
+        :param tree_type (int): tree id of the tree to plant
+        :param curr_x (int): x coordinate about which is center of local search
+        :param curr_y (int): y coordinate about which is center of local search
+        :return: boolean plantable
+        """
+
         #search in a 4x4 grid around the current position. handle edge cases where the search goes out of bounds
         min_x = max(0, curr_x - 2)
         max_x = min(self.env.x, curr_x + 2)
@@ -131,70 +172,5 @@ class AlgorithmMutations:
                         for spot in occupied_spots:
                             y, x = spot
                             self.env.plant(x, y, tree)
-                        #if self.env.grid[y][x].pedestrian_road:
-                            #set additional 8 blocks up, down, left, right to be unplantable
-                            #min_i = max(0, y - 8)
-                            #max_i = min(self.env.y, y + 8)
-                            #min_j = max(0, x - 8)
-                            #max_j = min(self.env.x, x + 8)
-                            #for k in range(min_i, max_i):
-                           #     for l in range(min_j, max_j):
-                           #         self.env.grid[k][l].plantable = False
                         return True
         return False
-
-
-    def init_grid(self):
-        #loop through grid and try at each location to plant a random tree
-        for y in range(self.env.y):
-            for x in range(self.env.x):
-                #choose a random val between 0 and 22
-                chance = random.choice([1, 2, 3, 4, 5])
-                if chance < 4: continue
-                #val = random.randint(0, 21)
-                val = random.randint(0, 16)
-                tree = self.generator.generateTree(self.tree_types_dict[val], (x, y))
-                #check if tree can be planted at location
-                occupied_spots, numerical_representation = tree.returnOccupiedSpots()
-                print('occupied_spots for tree at ' + str(x) + ', ' + str(y) + ': ' + str(occupied_spots))
-                numerical_grid_copy = copy.deepcopy(self.env.numerical_grid)
-                numerical_grid_copy, plantable = self.spacing.update_coords(occupied_spots, numerical_grid_copy, numerical_representation, (x, y))
-                self.env.numerical_grid = numerical_grid_copy
-        #print the numerical grid
-        self.env.print_grid()
-
-
-    def visualize_grid(self):
-        printable_grid = np.zeros((self.env.y, self.env.x))
-        for y in range(self.env.y):
-            for x in range(self.env.x):
-                if self.env.numerical_grid[y][x] < 0:
-                    printable_grid[y][x] = -1
-                elif self.env.numerical_grid[y][x] == 0:
-                    printable_grid[y][x] = 0
-                else:
-                    printable_grid[y][x] = 1
-
-        #visualize grid
-        cmap = ListedColormap(['green', 'white', 'brown'])
-
-        # Define the boundaries
-        bounds = [-1.5, -0.5, 0.5, 1.5]
-
-        # Create the norm using BoundaryNorm
-        norm = BoundaryNorm(bounds, cmap.N)
-
-        # Create the plot
-        plt.figure(figsize=(9, 9))
-        plt.imshow(printable_grid, cmap=cmap, norm=norm, aspect='equal')
-
-        # Add grid lines with correct alignment
-        plt.grid(True, which='both', color='black', linestyle='-', linewidth=2)
-        plt.xticks(np.arange(-0.5, len(printable_grid[0]), 1), [])
-        plt.yticks(np.arange(-0.5, len(printable_grid), 1), [])
-
-        # Setting grid lines for minor ticks to ensure they are in between cells
-        plt.gca().set_xticks(np.arange(-0.5, len(printable_grid[0]), 1), minor=True)
-        plt.gca().set_yticks(np.arange(-0.5, len(printable_grid), 1), minor=True)
-        plt.grid(True, which='minor', color='black', linestyle='-', linewidth=2)
-        plt.show()
