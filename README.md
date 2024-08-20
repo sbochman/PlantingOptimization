@@ -6,6 +6,7 @@ Choi and Lee utilise a linear programming solution in their optimisation strateg
 
 This project recretes the apartment complex and compares the genetic algorithm to Choi and Lee's solution. The project as is beats the linear programming solution when maximising CO2 absorption, but fails to beat Choi and Lee when minimising cost.
 
+The resulting planting layouts are difficult to comprehend in a standard 2D graph. To fix this, virtual and mixed-reality is usefult to visualising complex data such as these optimised planting strategies. PlantXR uses the Varjo XR-3 to build a virtual and mixed-reality application to view and manipulate optimised tree layouts: https://github.com/sbochman/PlantXR/tree/main
 
 ## Running Project
 
