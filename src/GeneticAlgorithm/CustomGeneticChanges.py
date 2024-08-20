@@ -312,11 +312,11 @@ class CustomGeneticChanges:
         toolbox.register("select", tools.selTournament, tournsize=3)
 
         # Generate the initial population and run the genetic algorithm:
-        population_size = 500
+        population_size = 1000
         population = toolbox.population(n=population_size)
         avg_scores = []
         best_scores = []
-        NGEN = 50
+        NGEN = 25
         for gen in range(NGEN):
             print("Generation: ", gen)
             offspring = self.varAnd(population, toolbox, cxpb=0.5, mutpb=0.2)
